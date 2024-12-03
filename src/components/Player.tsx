@@ -70,7 +70,7 @@ const Player = observer(() => {
     getTracks();
     getHistory();
     // getAllChannelTracks();
-  }, []);
+  }, [store.channel_id]);
 
   useEffect(() => {
     dataTrack?.map((item: any) => {
@@ -85,7 +85,7 @@ const Player = observer(() => {
     getAudioToken();
     // audioRef.current?.setJumpTime(300);
     // audioRef.current?.setJumpTime(currentTimePlay);
-  }, [dataTrack, store.channel_id]);
+  }, [dataTrack]);
 
   useEffect(() => {
     // let duration: number = 1000;

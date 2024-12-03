@@ -22,7 +22,7 @@ const AllTracksOffline = observer(() => {
 
   useEffect(() => {
     getAllChannelTracks();
-  }, []);
+  }, [store.channel_id]);
 
   return (
     <>
