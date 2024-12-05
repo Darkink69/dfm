@@ -1,15 +1,27 @@
 // import store from "../store/store";
 import { observer } from "mobx-react-lite";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import "react-h5-audio-player/lib/styles.css";
 import store from "./store";
 import CardTrackOffline from "./CardTrackOffline";
+// import { channelDataProps } from "../models/model";
+// import { Test } from "../models/test";
 
 const AllTracksOffline = observer(() => {
   const [allChannelTracks, setAllChannelTracks] = useState<any>(null);
+  // const [tracks, setTracks] = useState<Test>();
   const [isLoaded, setIsLoaded] = useState(false);
   // const timerIdRef = useRef<any>(null);
   //   const audioRef = useRef<any>(null);
+
+  // const x = [
+  //   {
+  //     id: 12,
+  //     length: 100,
+  //     title: "Qqqqw",
+  //   },
+  //   { id: 55, length: 500, title: "bvcghcgfc" },
+  // ];
 
   const getAllChannelTracks = () => {
     fetch(

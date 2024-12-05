@@ -1,8 +1,8 @@
 import { observer } from "mobx-react-lite";
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 import store from "./store";
 
-const CardTrackOffline = observer(({ data }) => {
+const CardTrackOffline = observer(({ data }: any) => {
   const url = data?.content.assets[0].url.split("?")[0];
   // console.log(url);
   const audio_token = String(localStorage.getItem("data")).slice(1, -1);

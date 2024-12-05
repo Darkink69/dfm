@@ -1,8 +1,8 @@
 import { observer } from "mobx-react-lite";
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 import store from "./store";
 
-const CardChannel = observer(({ data }) => {
+const CardChannel = observer(({ data }: any) => {
   return (
     <>
       <div className="p-6 mx-auto bg-white">
