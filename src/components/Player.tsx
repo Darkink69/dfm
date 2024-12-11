@@ -1,4 +1,3 @@
-// import store from "../store/store";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState, useRef } from "react";
 import store from "./store";
@@ -16,13 +15,11 @@ const Player = observer(() => {
   // const [isLoaded, setIsLoaded] = useState(false);
   // const timerIdRef = useRef<any>(null);
   const audioRef = useRef<any>(null);
-
-  // const site = "di";
-  // const channel_id = 69;
+  const audio_token = "7e938c7250620a6fa561a93e733224a3";
 
   const getTracks = () => {
     fetch(
-      `https://api.audioaddict.com/v1/${store.site}/routines/channel/${store.channel_id}?tune_in=true&audio_token=7e938c7250620a6fa561a93e733224a3&_=1718769278012`
+      `https://api.audioaddict.com/v1/${store.site}/routines/channel/${store.channel_id}?tune_in=true&audio_token=${audio_token}&_=1718769278012`
     )
       .then((response) => response.json())
       .then((data) => setDataTrack(data.tracks))
@@ -76,10 +73,17 @@ const Player = observer(() => {
     dataTrack?.map((item: any) => {
       if (currentTrackId === item.id) {
         setCurrentTrack(item);
-        store.setSrcCurrentTrack("https:" + item.content.assets[0].url);
+        // store.setSrcCurrentTrack("https:" + item.content.assets[0].url);
+        // store.setCurrentPlaying({track: "https:" + item.content.assets[0].url});
+        store.setCurrentPlaying({
+          track: item.track,
+          url: "https:" + item.content.assets[0].url,
+          asset_url: "https:" + item.asset_url,
+        });
+
         document.title = `${currentTrack?.track}`;
         // console.log(item.id);
-        console.log("https:" + item.content.assets[0].url);
+        // console.log("https:" + item.content.assets[0].url);
       }
     });
     getAudioToken();
@@ -88,6 +92,7 @@ const Player = observer(() => {
   }, [dataTrack]);
 
   useEffect(() => {
+    // trackData.sort(() => Math.random() - 0.5)
     // let duration: number = 1000;
     Object.values(dataHistory).map((item: any) => {
       if (item.channel_id === store.channel_id) {
@@ -137,23 +142,30 @@ const Player = observer(() => {
 
   return (
     <>
-      <div className="flex items-center xl:gap-8 gap-2 flex-col sm:pt-40 pt-28 text-sm sm:text-2xl text-white font-bold sm:p-5 p-6">
+      <div className="fixed bottom-0 bg-black z-30 h-4/6 w-full">
         {currentTrack ? (
           <div>
-            <a href={currentTrack?.details_url}>
+            <div className="p-4">
+              <img
+                className="w-full"
+                // src={"https:" + currentTrack?.asset_url}
+                src={store.currentPlaying.asset_url}
+                alt=""
+              />
+              <p className="text-sky-400 text-base font-bold">
+                {store.channel_name}
+              </p>
+              <p className="text-white">{store.currentPlaying.track}</p>
+            </div>
+            {/* <a href={currentTrack?.details_url}>
               <p className="text-black">{currentTrack?.details_url}</p>
-            </a>
-            <img
-              className="w-[200px]"
-              src={"https:" + currentTrack?.asset_url}
-              alt=""
-            />
-            <p className="text-black">{currentTrack?.track}</p>
-            <div className="w-5/6">
+            </a> */}
+            <div className="p-2 w-full bg-slate-800">
               <AudioPlayer
                 ref={audioRef}
                 autoPlay
-                src={store.srcCurrentTrack}
+                src={store.currentPlaying.url}
+                // src={store.srcCurrentTrack}
                 // src={"https:" + currentTrack?.content.assets[0].url}
                 volume={0.5}
                 showJumpControls={false}
@@ -187,7 +199,7 @@ const Player = observer(() => {
           <p>Loading..</p>
         )}
         <button
-          className="w-[500px] bg-lime-500"
+          className="relative bottom-2 w-[100px] bg-lime-500"
           onClick={() => {
             getNextTrack();
             console.log(currentTimePlay);
@@ -196,30 +208,7 @@ const Player = observer(() => {
         >
           on Air
         </button>
-        {/* <button
-          className="w-[500px] bg-lime-500"
-          onClick={() => setIsLoaded(!isLoaded)}
-        >
-          Все треки
-        </button> */}
       </div>
-      {/* <div className="grid sm:grid-cols-5 grid-cols-1 gap-4 pt-4">
-        {isLoaded ? (
-          allChannelTracks?.map((item: any) => {
-            return <CardTrackOffline data={item} key={item.id} />;
-          })
-        ) : (
-          <p className="font-mono text-center text-slate-600 decoration-solid">
-            Загрузка...
-          </p>
-        )}
-      </div> */}
-      {/* {allChannelTracks?.map((item) => {
-        <div>
-          <img src={item.asset_url} alt="" />
-          <p>{item.track}</p>
-        </div>;
-      })} */}
     </>
   );
 });

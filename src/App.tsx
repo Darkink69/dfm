@@ -7,11 +7,14 @@ import "./index.css";
 function App() {
   return (
     <>
-      <Header />
-      <AllChannels />
-      <AllTracksOffline />
-      <Player />
-      {/* <div className="flex items-center text-lime-600">DI Anno!</div> */}
+      <div className="bg-slate-700">
+        <div className="container mx-auto bg-slate-800">
+          <Header />
+          <AllChannels />
+          <AllTracksOffline />
+          <Player />
+        </div>
+      </div>
     </>
   );
 }

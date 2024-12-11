@@ -4,7 +4,7 @@ import store from "./store";
 
 const CardTrackOffline = observer(({ data }: any) => {
   const url = data?.content.assets[0].url.split("?")[0];
-  // console.log(url);
+  // console.log(data);
   const audio_token = String(localStorage.getItem("data")).slice(1, -1);
   // console.log(audio_token);
   const downloadTrack = () => {
@@ -26,23 +26,37 @@ const CardTrackOffline = observer(({ data }: any) => {
 
   return (
     <>
-      <div className="p-6 mx-auto bg-white">
-        {data && <div className="flex flex-col items-end"></div>}
+      <div className="p-2">
+        {/* {data && <div className="flex flex-col items-end"></div>} */}
         <div
-          className="cursor-pointer"
+          className="flex cursor-pointer"
           onClick={() =>
-            store.setSrcCurrentTrack(`https:${url}?${audio_token}`)
+            // store.setSrcCurrentTrack(`https:${url}?${audio_token}`)
+            store.setCurrentPlaying({
+              track: data?.track,
+              url: `https:${url}?${audio_token}`,
+              asset_url: data.asset_url,
+            })
           }
         >
-          <img src={data.asset_url} alt="" />
-          <p className="text-black">{data.track}</p>
+          <img className="w-[80px]" src={data.asset_url} alt="" />
+          <div className="pr-8 pl-4">
+            <p className="text-white text-sm">{data.track}</p>
+            <p className="text-white text-sm">{data.release_date}</p>
+            <p className="text-gray-500 text-sm">
+              {Math.floor(data.length / 60)}:
+              {data.length % 60 < 10
+                ? "0" + (data.length % 60)
+                : data.length % 60}
+            </p>
+          </div>
         </div>
-        <button
+        {/* <button
           className="w-[200px] bg-lime-500"
           onClick={() => downloadTrack()}
         >
           Скачать
-        </button>
+        </button> */}
       </div>
     </>
   );

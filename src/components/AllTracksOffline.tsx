@@ -5,7 +5,6 @@ import "react-h5-audio-player/lib/styles.css";
 import store from "./store";
 import CardTrackOffline from "./CardTrackOffline";
 // import { channelDataProps } from "../models/model";
-// import { Test } from "../models/test";
 
 const AllTracksOffline = observer(() => {
   const [allChannelTracks, setAllChannelTracks] = useState<any>(null);
@@ -14,21 +13,12 @@ const AllTracksOffline = observer(() => {
   // const timerIdRef = useRef<any>(null);
   //   const audioRef = useRef<any>(null);
 
-  // const x = [
-  //   {
-  //     id: 12,
-  //     length: 100,
-  //     title: "Qqqqw",
-  //   },
-  //   { id: 55, length: 500, title: "bvcghcgfc" },
-  // ];
-
   const getAllChannelTracks = () => {
     fetch(
       `https://raw.githubusercontent.com/Darkink69/selenium_101ru/refs/heads/main/di/db_di_full_${store.channel_id}.json`
     )
       .then((response) => response.json())
-      .then((data) => setAllChannelTracks(data))
+      .then((data) => setAllChannelTracks(data.sort(() => Math.random() - 0.5)))
       .catch((error) => console.error(error));
   };
 
@@ -38,14 +28,14 @@ const AllTracksOffline = observer(() => {
 
   return (
     <>
-      <div className="flex items-center xl:gap-8 gap-2 flex-col sm:pt-40 pt-28 text-sm sm:text-2xl text-white font-bold sm:p-5 p-6">
+      <div className="flex items-center flex-col p-1">
         <button
-          className="w-[500px] bg-lime-500"
+          className="w-full bg-lime-500"
           onClick={() => setIsLoaded(!isLoaded)}
         >
           Все треки
         </button>
-        <div className="grid sm:grid-cols-5 grid-cols-1 gap-4 pt-4">
+        <div className="grid sm:grid-cols-5 grid-cols-1">
           {isLoaded ? (
             allChannelTracks?.map((item: any) => {
               return <CardTrackOffline data={item} key={item.id} />;

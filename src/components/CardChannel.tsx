@@ -5,14 +5,15 @@ import store from "./store";
 const CardChannel = observer(({ data }: any) => {
   return (
     <>
-      <div className="p-6 mx-auto bg-white">
-        {data && <div className="flex flex-col items-end"></div>}
+      <div>
+        {data && <div className="flex flex-col"></div>}
+        <p className="text-sky-400 text-base font-bold">{store.channel_name}</p>
         <div
           onClick={() => store.setChannel_id(data.channel_id)}
           className="cursor-pointer"
         >
-          <img src={data.art_url} alt="" />
-          <p className="text-black">{data.track}</p>
+          <img src={data.art_url} alt={data.track} />
+          <p className="text-xs text-white">{data.track}</p>
         </div>
       </div>
     </>
