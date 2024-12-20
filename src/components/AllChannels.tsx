@@ -7,10 +7,14 @@ import CardChannel from "./CardChannel";
 
 const AllChannels = observer(() => {
   const [allChannels, setAllChannels] = useState([]);
-  const [isLoaded, setIsLoaded] = useState(false);
+  // const [isLoaded, setIsLoaded] = useState(false);
 
   const getAllChannels = () => {
-    fetch(`https://api.audioaddict.com/v1/${store.site}/track_history.json`)
+    fetch(
+      `https://api.audioaddict.com/v1/${
+        store.sites[store.currentSite]
+      }/track_history.json`
+    )
       .then((response) => response.json())
       .then((data) => setAllChannels(data))
       .catch((error) => console.error(error));
@@ -22,23 +26,53 @@ const AllChannels = observer(() => {
 
   return (
     <>
-      <div className="pt-16 p-4">
-        <button
-          className="w-full bg-lime-500"
-          onClick={() => setIsLoaded(!isLoaded)}
-        >
-          Все каналы
-        </button>
-        <div className="grid sm:grid-cols-5 grid-cols-2 gap-2 pt-2">
-          {isLoaded ? (
-            Object.values(allChannels).map((item: any) => {
-              return <CardChannel data={item} key={item.channel_id} />;
-            })
-          ) : (
-            <p className="font-mono text-center text-slate-600 decoration-solid">
-              Загрузка...
-            </p>
-          )}
+      <div className="pt-20 pl-4 pr-4">
+        <div className="flex items-baseline pb-2 bg-slate-800">
+          <div className="w-full text-white text-xl cursor-pointer">
+            Любимые каналы
+          </div>
+          <svg
+            className={"-rotate-90 m-2"}
+            width="16"
+            height="11"
+            viewBox="0 0 16 11"
+            fill="none"
+          >
+            <path d="M1 1L8 9L15 1" stroke="white" strokeWidth="2" />
+          </svg>
+        </div>
+
+        <div className="flex items-baseline bg-slate-800">
+          <div
+            className="w-full text-white text-xl cursor-pointer"
+            onClick={() => {
+              // setIsLoaded(!isLoaded);
+              if (!store.allChannelsView) {
+                getAllChannels();
+              }
+              store.setAllChannelsView(store.allChannelsView ? false : true);
+              store.setSizePlayer(false);
+            }}
+          >
+            Все каналы
+          </div>
+          <svg
+            className={store.allChannelsView ? "m-2" : "-rotate-90 m-2"}
+            width="16"
+            height="11"
+            viewBox="0 0 16 11"
+            fill="none"
+          >
+            <path d="M1 1L8 9L15 1" stroke="white" strokeWidth="2" />
+          </svg>
+        </div>
+
+        <div className="grid sm:grid-cols-5 grid-cols-2 gap-2 pt-4">
+          {store.allChannelsView
+            ? Object.values(allChannels).map((item: any) => {
+                return <CardChannel data={item} key={item.channel_id} />;
+              })
+            : ""}
         </div>
       </div>
     </>

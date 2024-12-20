@@ -7,27 +7,26 @@ const CardTrackOffline = observer(({ data }: any) => {
   // console.log(data);
   const audio_token = String(localStorage.getItem("data")).slice(1, -1);
   // console.log(audio_token);
-  const downloadTrack = () => {
-    try {
-      fetch(`https:${url}?${audio_token}`)
-        .then((response) => response.blob())
-        .then((blob) => {
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = `${data.track}.mp3`;
-          a.click();
-          window.URL.revokeObjectURL(url);
-        });
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // const downloadTrack = () => {
+  //   try {
+  //     fetch(`https:${url}?${audio_token}`)
+  //       .then((response) => response.blob())
+  //       .then((blob) => {
+  //         const url = window.URL.createObjectURL(blob);
+  //         const a = document.createElement("a");
+  //         a.href = url;
+  //         a.download = `${data.track}.mp3`;
+  //         a.click();
+  //         window.URL.revokeObjectURL(url);
+  //       });
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   return (
     <>
       <div className="p-2">
-        {/* {data && <div className="flex flex-col items-end"></div>} */}
         <div
           className="flex cursor-pointer"
           onClick={() =>
@@ -39,7 +38,15 @@ const CardTrackOffline = observer(({ data }: any) => {
             })
           }
         >
-          <img className="w-[80px]" src={data.asset_url} alt="" />
+          <img
+            className="w-[80px] h-[80px]"
+            src={
+              data.asset_url === null
+                ? "https://cdn-images.audioaddict.com/a/7/3/c/6/c/a73c6ccba5f077b956835714d7e3d9a8.png"
+                : data.asset_url
+            }
+            alt=""
+          />
           <div className="pr-8 pl-4">
             <p className="text-white text-sm">{data.track}</p>
             <p className="text-white text-sm">{data.release_date}</p>

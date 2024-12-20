@@ -1,8 +1,17 @@
 import { observer } from "mobx-react-lite";
 // import { useEffect, useState } from "react";
-// import store from "./store";
+import store from "./store";
 
 const Header = observer(() => {
+  const setSiteData = (site: number, id: number, name: string) => {
+    store.setCurrentSite(site);
+    store.setChannel_id(id);
+    store.setAllChannelsView(false);
+    store.setAllTracksOfflineView(false);
+    store.setSizePlayer(true);
+    store.setChannel_name(name);
+  };
+
   return (
     <>
       <div className="fixed bg-black z-50 sm:h-[60px] h-[60px] w-full sm:shadow-md">
@@ -44,53 +53,158 @@ const Header = observer(() => {
             </svg>
           </div>
 
-          <p className="text-white text-xl font-bold">Classical</p>
-          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-            <path
-              d="M20.2588 17.6985L20.0314 18.0396L20.3213 18.3294L26.7952 24.8033L27.277 25.2851L26.7952 25.7669L25.751 26.8111L25.2692 27.2929L24.7874 26.8111L18.3135 20.3372L18.0014 20.0251L17.653 20.296C15.8773 21.6771 13.6944 22.2791 11.486 22.2791C5.49705 22.2791 0.5 17.282 0.5 11.2931C0.5 5.29442 5.50281 0.316583 11.2608 0.505206L11.269 0.505474H11.2772C17.2655 0.505474 22.2632 5.51238 22.2632 11.5019C22.2632 13.682 21.4683 15.8843 20.2588 17.6985ZM3.12331 11.3662C3.12331 15.913 6.81385 19.6036 11.3607 19.6036C15.9075 19.6036 19.5981 15.913 19.5981 11.3662C19.5981 6.81933 15.9075 3.12879 11.3607 3.12879C6.81385 3.12879 3.12331 6.81933 3.12331 11.3662Z"
-              fill="#808080"
-              stroke="#191919"
-            />
-          </svg>
+          <div className="flex items-center">
+            <p
+              onClick={() =>
+                store.setSwitchChannel(store.switchChannel ? false : true)
+              }
+              className="text-white text-xl font-bold cursor-pointer"
+            >
+              {store.siteName[store.currentSite]}
+            </p>
+            <svg
+              className={store.switchChannel ? " rotate-180 m-2" : "m-2"}
+              width="16"
+              height="11"
+              viewBox="0 0 16 11"
+              fill="none"
+            >
+              <path d="M1 1L8 9L15 1" stroke="white" strokeWidth="2" />
+            </svg>
+          </div>
 
-          <svg width="50" height="50" viewBox="0 0 50 50" fill="none">
-            <circle cx="25" cy="25" r="25" fill="url(#paint0_linear_3409_4)" />
-            <rect
-              x="16.428"
-              y="17.857"
-              width="17.1429"
-              height="1.80952"
-              fill="white"
-            />
-            <rect
-              x="16.428"
-              y="23.2854"
-              width="17.1429"
-              height="1.80952"
-              fill="white"
-            />
-            <rect
-              x="16.428"
-              y="29.619"
-              width="17.1429"
-              height="1.80952"
-              fill="white"
-            />
-            <defs>
-              <linearGradient
-                id="paint0_linear_3409_4"
-                x1="25"
-                y1="0"
-                x2="25"
-                y2="50"
-                gradientUnits="userSpaceOnUse"
-              >
-                <stop stopColor="#26A69A" />
-                <stop offset="1" stopColor="#05635A" />
-              </linearGradient>
-            </defs>
-          </svg>
+          <div className="flex items-center justify-between w-[90px]">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path
+                d="M20.2588 17.6985L20.0314 18.0396L20.3213 18.3294L26.7952 24.8033L27.277 25.2851L26.7952 25.7669L25.751 26.8111L25.2692 27.2929L24.7874 26.8111L18.3135 20.3372L18.0014 20.0251L17.653 20.296C15.8773 21.6771 13.6944 22.2791 11.486 22.2791C5.49705 22.2791 0.5 17.282 0.5 11.2931C0.5 5.29442 5.50281 0.316583 11.2608 0.505206L11.269 0.505474H11.2772C17.2655 0.505474 22.2632 5.51238 22.2632 11.5019C22.2632 13.682 21.4683 15.8843 20.2588 17.6985ZM3.12331 11.3662C3.12331 15.913 6.81385 19.6036 11.3607 19.6036C15.9075 19.6036 19.5981 15.913 19.5981 11.3662C19.5981 6.81933 15.9075 3.12879 11.3607 3.12879C6.81385 3.12879 3.12331 6.81933 3.12331 11.3662Z"
+                fill="#808080"
+                stroke="#191919"
+              />
+            </svg>
+
+            <svg
+              className=""
+              width="50"
+              height="50"
+              viewBox="0 0 50 50"
+              fill="none"
+            >
+              <circle
+                cx="25"
+                cy="25"
+                r="25"
+                fill="url(#paint0_linear_3409_4)"
+              />
+              <rect
+                x="16.428"
+                y="17.857"
+                width="17.1429"
+                height="1.80952"
+                fill="white"
+              />
+              <rect
+                x="16.428"
+                y="23.2854"
+                width="17.1429"
+                height="1.80952"
+                fill="white"
+              />
+              <rect
+                x="16.428"
+                y="29.619"
+                width="17.1429"
+                height="1.80952"
+                fill="white"
+              />
+              <defs>
+                <linearGradient
+                  id="paint0_linear_3409_4"
+                  x1="25"
+                  y1="0"
+                  x2="25"
+                  y2="50"
+                  gradientUnits="userSpaceOnUse"
+                >
+                  <stop stopColor="#26A69A" />
+                  <stop offset="1" stopColor="#05635A" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
         </div>
+
+        {store.switchChannel ? (
+          <div className="w-full h-[200px] bg-black opacity-90">
+            <div className="grid grid-cols-2 justify-center p-8 text-2xl font-bold pb-4">
+              <div
+                onClick={() => setSiteData(0, 69, "Classic EuroDance")}
+                className={
+                  store.currentSite === 0
+                    ? "text-sky-400 pb-4"
+                    : "text-white pb-4"
+                }
+              >
+                Electronic
+              </div>
+              <div
+                onClick={() => {
+                  setSiteData(1, 143, "Classic Rock");
+                }}
+                className={
+                  store.currentSite === 1
+                    ? "text-sky-400 pb-4"
+                    : "text-white pb-4"
+                }
+              >
+                Rock
+              </div>
+              <div
+                onClick={() => {
+                  setSiteData(2, 38, "Classic Hip-Hop");
+                }}
+                className={
+                  store.currentSite === 2
+                    ? "text-sky-400 pb-4"
+                    : "text-white pb-4"
+                }
+              >
+                Tunes
+              </div>
+              <div
+                onClick={() => setSiteData(3, 79, "Modern Vocal Jazz")}
+                className={
+                  store.currentSite === 3
+                    ? "text-sky-400 pb-4"
+                    : "text-white pb-4"
+                }
+              >
+                Jazz
+              </div>
+              <div
+                onClick={() => setSiteData(4, 398, "Vivaldi")}
+                className={
+                  store.currentSite === 4
+                    ? "text-sky-400 pb-4"
+                    : "text-white pb-4"
+                }
+              >
+                Classical
+              </div>
+              <div
+                onClick={() => setSiteData(5, 449, "Meditation")}
+                className={
+                  store.currentSite === 5
+                    ? "text-sky-400 pb-4"
+                    : "text-white pb-4"
+                }
+              >
+                Zen
+              </div>
+            </div>
+          </div>
+        ) : (
+          ""
+        )}
       </div>
     </>
   );

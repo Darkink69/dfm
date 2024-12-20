@@ -7,8 +7,8 @@ import "./index.css";
 function App() {
   return (
     <>
-      <div className="bg-slate-700">
-        <div className="container mx-auto bg-slate-800">
+      <div className="bg-slate-700 container mx-auto h-full">
+        <div className="container mx-auto h-full bg-slate-800">
           <Header />
           <AllChannels />
           <AllTracksOffline />

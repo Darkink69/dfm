@@ -9,13 +9,15 @@ import CardTrackOffline from "./CardTrackOffline";
 const AllTracksOffline = observer(() => {
   const [allChannelTracks, setAllChannelTracks] = useState<any>(null);
   // const [tracks, setTracks] = useState<Test>();
-  const [isLoaded, setIsLoaded] = useState(false);
+  // const [isLoaded, setIsLoaded] = useState(false);
   // const timerIdRef = useRef<any>(null);
   //   const audioRef = useRef<any>(null);
 
   const getAllChannelTracks = () => {
     fetch(
-      `https://raw.githubusercontent.com/Darkink69/selenium_101ru/refs/heads/main/di/db_di_full_${store.channel_id}.json`
+      `https://raw.githubusercontent.com/Darkink69/selenium_101ru/refs/heads/main/${
+        store.sites[store.currentSite]
+      }/db_${store.sites[store.currentSite]}_full_${store.channel_id}.json`
     )
       .then((response) => response.json())
       .then((data) => setAllChannelTracks(data.sort(() => Math.random() - 0.5)))
@@ -28,23 +30,40 @@ const AllTracksOffline = observer(() => {
 
   return (
     <>
-      <div className="flex items-center flex-col p-1">
-        <button
-          className="w-full bg-lime-500"
-          onClick={() => setIsLoaded(!isLoaded)}
+      <div
+        className={
+          store.allChannelsView
+            ? "pl-4 pr-4 mt-8 pb-28"
+            : "pl-4 pr-4 -mt-2 pb-28"
+        }
+      >
+        <div
+          className="flex items-baseline pb-2 bg-slate-800"
+          onClick={() =>
+            store.setAllTracksOfflineView(
+              store.allTracksOfflineView ? false : true
+            )
+          }
         >
-          Все треки
-        </button>
+          <div className="w-full text-white text-xl cursor-pointer">
+            Все треки {store.channel_name}
+          </div>
+          <svg
+            className={store.allTracksOfflineView ? "m-2" : "-rotate-90 m-2"}
+            width="16"
+            height="11"
+            viewBox="0 0 16 11"
+            fill="none"
+          >
+            <path d="M1 1L8 9L15 1" stroke="white" strokeWidth="2" />
+          </svg>
+        </div>
         <div className="grid sm:grid-cols-5 grid-cols-1">
-          {isLoaded ? (
-            allChannelTracks?.map((item: any) => {
-              return <CardTrackOffline data={item} key={item.id} />;
-            })
-          ) : (
-            <p className="font-mono text-center text-slate-600 decoration-solid">
-              Загрузка...
-            </p>
-          )}
+          {store.allTracksOfflineView
+            ? allChannelTracks?.map((item: any) => {
+                return <CardTrackOffline data={item} key={item.id} />;
+              })
+            : ""}
         </div>
       </div>
     </>
