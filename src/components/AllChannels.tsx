@@ -1,4 +1,3 @@
-// import store from "../store/store";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import "react-h5-audio-player/lib/styles.css";
@@ -7,7 +6,6 @@ import CardChannel from "./CardChannel";
 
 const AllChannels = observer(() => {
   const [allChannels, setAllChannels] = useState([]);
-  // const [isLoaded, setIsLoaded] = useState(false);
 
   const getAllChannels = () => {
     fetch(
@@ -26,27 +24,13 @@ const AllChannels = observer(() => {
 
   return (
     <>
-      <div className="pt-20 pl-4 pr-4">
-        <div className="flex items-baseline pb-2 bg-slate-800">
-          <div className="w-full text-white text-xl cursor-pointer">
-            Любимые каналы
-          </div>
-          <svg
-            className={"-rotate-90 m-2"}
-            width="16"
-            height="11"
-            viewBox="0 0 16 11"
-            fill="none"
-          >
-            <path d="M1 1L8 9L15 1" stroke="white" strokeWidth="2" />
-          </svg>
-        </div>
-
+      <div
+        className={store.allFavChannelsView ? "pl-4 pr-4 mt-8" : "pl-4 pr-4"}
+      >
         <div className="flex items-baseline bg-slate-800">
           <div
             className="w-full text-white text-xl cursor-pointer"
             onClick={() => {
-              // setIsLoaded(!isLoaded);
               if (!store.allChannelsView) {
                 getAllChannels();
               }

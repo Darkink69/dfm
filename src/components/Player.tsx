@@ -1,13 +1,11 @@
 import { observer } from "mobx-react-lite";
 import { useEffect, useState, useRef } from "react";
 import store from "./store";
-import AudioPlayer from "react-h5-audio-player";
+import AudioPlayer, { RHAP_UI } from "react-h5-audio-player";
 import "react-h5-audio-player/lib/styles.css";
-// import CardTrackOffline from "./CardTrackOffline";
 
 const Player = observer(() => {
   const [dataTrack, setDataTrack] = useState([]);
-  // const [allChannelTracks, setAllChannelTracks] = useState<any>(null);
   const [dataHistory, setDataHistory] = useState([]);
   const [dataChannels, setDataChannels] = useState([]);
   const [currentTrack, setCurrentTrack] = useState<any>();
@@ -56,7 +54,6 @@ const Player = observer(() => {
   };
 
   const getAudioToken = () => {
-    // console.log(currentTrack?.content.assets[0].url.split("?")[1]);
     localStorage.setItem(
       "data",
       JSON.stringify(currentTrack?.content.assets[0].url.split("?")[1] || [])
@@ -84,17 +81,11 @@ const Player = observer(() => {
     dataTrack?.map((item: any) => {
       if (currentTrackId === item.id) {
         setCurrentTrack(item);
-        // store.setSrcCurrentTrack("https:" + item.content.assets[0].url);
-        // store.setCurrentPlaying({track: "https:" + item.content.assets[0].url});
         store.setCurrentPlaying({
           track: item.track,
           url: "https:" + item.content.assets[0].url,
           asset_url: "https:" + item.asset_url,
         });
-
-        // document.title = `${currentTrack?.track}`;
-        // console.log(item.id);
-        // console.log("https:" + item.content.assets[0].url);
       }
     });
     getAudioToken();
@@ -103,13 +94,9 @@ const Player = observer(() => {
   }, [dataTrack]);
 
   useEffect(() => {
-    // trackData.sort(() => Math.random() - 0.5)
-    // let duration: number = 1000;
     Object.values(dataHistory).map((item: any) => {
       if (item.channel_id === store.channel_id) {
         setCurrentTrackId(item.track_id);
-        // console.log(item.duration, "item.duration");
-        // duration = item.duration;
         const timeStamp = item?.started;
         const timeLeft = Math.floor((Date.now() - timeStamp * 1000) / 1000);
         console.log(timeLeft);
@@ -118,19 +105,28 @@ const Player = observer(() => {
     });
 
     console.log(audioRef.current?.duration);
-    // document.title = `${currentTrack?.track}`;
+    audioRef.current?.setJumpTime(currentTimePlay);
   }, [dataHistory]);
 
   useEffect(() => {
-    // console.log(dataChannels);
     const allNames: { id: number; name: string }[] = [];
     dataChannels.map((item: any) => {
       allNames.push({ id: item.id, name: item.name });
     });
     // console.log(allNames);
     store.setAllStationsNames(allNames);
-    // console.log(audioRef.current);
   }, [dataChannels]);
+
+  useEffect(() => {
+    const os = navigator.userAgent;
+    // if (os.includes("Android")) {
+    //   console.log("Android");
+    // }
+    if (os.includes("iPhone") || os.includes("iPad")) {
+      // console.log(audioRef.current);
+      console.log(audioRef.current.props);
+    }
+  }, []);
 
   // useEffect(() => {
   //   // allChannelTracks?.map((item: any) => {
@@ -157,9 +153,23 @@ const Player = observer(() => {
           src={store.currentPlaying.url}
           // src={store.srcCurrentTrack}
           // src={"https:" + currentTrack?.content.assets[0].url}
-          volume={0.5}
+          volume={
+            navigator.userAgent.includes("iPhone") ||
+            navigator.userAgent.includes("iPad") ||
+            navigator.userAgent.includes("Android")
+              ? 0.5
+              : 0.5
+          }
+          // customVolumeControls={
+          //   navigator.userAgent.includes("iPhone") ||
+          //   navigator.userAgent.includes("iPad") ||
+          //   navigator.userAgent.includes("Android")
+          //     ? []
+          //     : [RHAP_UI.VOLUME]
+          // }
+          customVolumeControls={[RHAP_UI.VOLUME]}
+          showFilledVolume={false}
           showJumpControls={false}
-          showFilledProgress={false}
           customAdditionalControls={[]}
           // onLoadStart={() => console.log("onLoadStart")}
           onLoadedData={() => {
@@ -176,32 +186,40 @@ const Player = observer(() => {
           onPause={() => {
             setIsPlaying(false);
             console.log("onPause!!");
+            store.setOnAir(true);
           }}
           onEnded={() => {
             getNextTrack();
             console.log("END!!");
           }}
           // onSeeking={() => console.log("onSeeking")}
-          // onSeeked={() => console.log("onSeeked")}
+          onSeeked={() => store.setOnAir(true)}
           // onPlaying={() => console.log("playing?")}
           // onWaiting={() => console.log("onWaiting!!!!!!")}
-          onError={() => console.log("Что пошло не туда... )")}
+          onError={() => console.log("Что пошло не туда...")}
           // onChangeCurrentTimeError={() => console.log("error!!!")}
           // onListen={() => console.log("onListen")}
         />
-        <button
-          className="relative bottom-2 w-[100px] bg-lime-500"
-          onClick={() => {
-            getNextTrack();
-            console.log(currentTimePlay);
-            // audioRef.current?.setJumpTime(currentTimePlay);
-          }}
-        >
-          on Air
-        </button>
+        {store.onAir ? (
+          <div
+            className="relative bottom-2 w-[100px] bg-lime-500"
+            onClick={() => {
+              // getNextTrack();
+              console.log(currentTimePlay);
+              audioRef.current?.setJumpTime(currentTimePlay);
+              audioRef.current.audio.current.play();
+              store.setOnAir(false);
+            }}
+          >
+            on Air
+          </div>
+        ) : (
+          ""
+        )}
       </div>
+
       {store.bigPlayer ? (
-        <div className="fixed bottom-0 bg-black z-20 h-[550px] w-full">
+        <div className="fixed bottom-0 bg-black z-20 h-[550px] w-full animate-up">
           <div>
             <div className="p-4">
               <img
@@ -229,7 +247,7 @@ const Player = observer(() => {
           </div>
         </div>
       ) : (
-        <div className="fixed bottom-0 bg-black z-20 h-[80px] w-full p-2">
+        <div className="fixed bottom-0 bg-black z-20 h-[80px] w-full p-2 animate-down">
           <div className="flex cursor-pointer">
             <img
               onClick={() => store.setSizePlayer(true)}

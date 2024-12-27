@@ -30,7 +30,7 @@ const CardChannel = observer(({ data }: any) => {
             src={
               data.art_url === null
                 ? "https://cdn-images.audioaddict.com/a/7/3/c/6/c/a73c6ccba5f077b956835714d7e3d9a8.png"
-                : data.art_url
+                : data.art_url + "?size=175x175&quality=90"
             }
             alt={data.track}
           />

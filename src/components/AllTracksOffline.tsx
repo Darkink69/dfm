@@ -8,21 +8,35 @@ import CardTrackOffline from "./CardTrackOffline";
 
 const AllTracksOffline = observer(() => {
   const [allChannelTracks, setAllChannelTracks] = useState<any>(null);
+  const [showOfflineTracks, setShowOfflineTracks] = useState<any>(null);
+  const [showTracks, setShowTracks] = useState(20);
   // const [tracks, setTracks] = useState<Test>();
   // const [isLoaded, setIsLoaded] = useState(false);
   // const timerIdRef = useRef<any>(null);
   //   const audioRef = useRef<any>(null);
 
   const getAllChannelTracks = () => {
+    // fetch(
+    //   `https://raw.githubusercontent.com/Darkink69/selenium_101ru/refs/heads/main/${
+    //     store.sites[store.currentSite]
+    //   }/db_${store.sites[store.currentSite]}_full_${store.channel_id}.json`
+    // )
     fetch(
-      `https://raw.githubusercontent.com/Darkink69/selenium_101ru/refs/heads/main/${
+      `https://qh8bsvaksadb2kj9.public.blob.vercel-storage.com/${
         store.sites[store.currentSite]
-      }/db_${store.sites[store.currentSite]}_full_${store.channel_id}.json`
+      }/db_${store.sites[store.currentSite]}_full_${
+        store.channel_id
+      }_light.json`
     )
       .then((response) => response.json())
       .then((data) => setAllChannelTracks(data.sort(() => Math.random() - 0.5)))
       .catch((error) => console.error(error));
   };
+
+  useEffect(() => {
+    setShowOfflineTracks(allChannelTracks?.slice(0, showTracks));
+    // setShowTracks(30);
+  }, [allChannelTracks, showTracks]);
 
   useEffect(() => {
     getAllChannelTracks();
@@ -32,9 +46,7 @@ const AllTracksOffline = observer(() => {
     <>
       <div
         className={
-          store.allChannelsView
-            ? "pl-4 pr-4 mt-8 pb-28"
-            : "pl-4 pr-4 -mt-2 pb-28"
+          store.allChannelsView ? "pl-4 pr-4 mt-8 pb-28" : "pl-4 pr-4 pb-28"
         }
       >
         <div
@@ -60,10 +72,16 @@ const AllTracksOffline = observer(() => {
         </div>
         <div className="grid sm:grid-cols-5 grid-cols-1">
           {store.allTracksOfflineView
-            ? allChannelTracks?.map((item: any) => {
+            ? showOfflineTracks?.map((item: any) => {
                 return <CardTrackOffline data={item} key={item.id} />;
               })
             : ""}
+        </div>
+        <div
+          onClick={() => setShowTracks(showTracks + 30)}
+          className="text-white pt-4 text-lg underline cursor-pointer"
+        >
+          {store.allTracksOfflineView ? "Показать еще" : ""}
         </div>
       </div>
     </>

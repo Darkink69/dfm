@@ -5,3 +5,56 @@
 .rhap_container {
   display: flex;
 }
+
+/* .rhap_volume-controls {
+  display: hidden;
+} */
+
+:root:has(.no-scroll) {
+  overflow: hidden;
+}
+
+@keyframes up {
+  0% {
+    transform: translateY(50%);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+  100% {
+    transform: translateY(0%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+}
+
+.animate-up {
+  animation: up 0.3s;
+}
+
+@keyframes down {
+  0% {
+    transform: translateY(-100%);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+  100% {
+    transform: translateY(0%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+}
+
+.animate-down {
+  animation: down 0.2s;
+}
+
+@keyframes right {
+  0% {
+    transform: translateX(100%);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+  100% {
+    transform: translateX(0%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+}
+
+.animate-right {
+  animation: right 0.3s;
+}

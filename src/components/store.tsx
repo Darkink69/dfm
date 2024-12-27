@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 
 class Store {
-  site = "radiotunes";
+  // site = "radiotunes";
   sites = [
     "di",
     "rockradio",
@@ -18,17 +18,18 @@ class Store {
   // srcCurrentTrack = "";
   shuffle = false;
   bigPlayer = true;
-  allChannelsView = true;
+  allFavChannelsView = true;
+  allChannelsView = false;
   allTracksOfflineView = false;
 
-  defaultChannels = [
-    { currentSite: 0, channel_id: 69 },
-    { currentSite: 1, channel_id: 143 },
-    { currentSite: 2, channel_id: 38 },
-    { currentSite: 3, channel_id: 73 },
-    { currentSite: 4, channel_id: 360 },
-    { currentSite: 5, channel_id: 449 },
-  ];
+  // defaultChannels = [
+  //   { currentSite: 0, channel_id: 69 },
+  //   { currentSite: 1, channel_id: 143 },
+  //   { currentSite: 2, channel_id: 38 },
+  //   { currentSite: 3, channel_id: 73 },
+  //   { currentSite: 4, channel_id: 360 },
+  //   { currentSite: 5, channel_id: 449 },
+  // ];
 
   currentPlaying = {
     track: "",
@@ -37,6 +38,7 @@ class Store {
   };
   allStationsNames = [{}];
 
+  onAir = false;
   switchChannel = false;
 
   constructor() {
@@ -79,12 +81,21 @@ class Store {
     this.switchChannel = view;
   }
 
+  setAllFavChannelsView(view: boolean) {
+    this.allFavChannelsView = view;
+  }
+
   setAllChannelsView(view: boolean) {
     this.allChannelsView = view;
   }
 
   setAllTracksOfflineView(view: boolean) {
     this.allTracksOfflineView = view;
+  }
+
+  setOnAir(air: boolean) {
+    this.onAir = air;
+    // console.log(air);
   }
 
   //   checkEvents() {
