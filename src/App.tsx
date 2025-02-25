@@ -6,20 +6,27 @@ import FavoriteChannels from "./components/FavoriteChannels";
 import Header from "./components/Header";
 import Player from "./components/Player";
 import "./index.css";
+import WaitAnimation from "./components/Waiting";
 
 function App() {
   return (
     <>
+      <WaitAnimation />
+      <div className="fixed -z-50 w-full h-full bg-slate-700"></div>
+      <div className="fixed bg-black z-50 h-[60px] w-full shadow-md">
+        <Header />
+      </div>
+      <BlackBG />
       <div className="bg-slate-700 container mx-auto h-full">
-        <div className="container mx-auto h-full bg-slate-800 ">
-          <Header />
-          <BlackBG />
+        <div className="h-full bg-slate-800 ">
           <FavoriteChannels />
           <AllChannels />
           <AllTracksOffline />
           <DefaultChannels />
-          <Player />
         </div>
+      </div>
+      <div className="">
+        <Player />
       </div>
     </>
   );

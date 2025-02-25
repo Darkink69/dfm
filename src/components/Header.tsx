@@ -14,8 +14,8 @@ const Header = observer(() => {
 
   return (
     <>
-      <div className="fixed bg-black z-50 sm:h-[60px] h-[60px] w-full sm:shadow-md">
-        <div className="container mx-auto flex items-center justify-between p-1 pl-4 pr-3">
+      <div className="container mx-auto">
+        <div className="flex items-center justify-between p-1 pl-4 pr-3">
           <div onClick={() => location.reload()}>
             <svg width="28" height="21" viewBox="0 0 28 21" fill="none">
               <path
@@ -39,10 +39,11 @@ const Header = observer(() => {
 
           <div className="flex items-center">
             <p
-              onClick={() =>
-                store.setSwitchChannel(store.switchChannel ? false : true)
-              }
-              className="text-white text-xl font-bold cursor-pointer"
+              onClick={() => {
+                store.setSwitchChannel(store.switchChannel ? false : true);
+                store.setAllFavChannelsView(false);
+              }}
+              className="text-white text-xl sm:text-2xl font-bold cursor-pointer"
             >
               {store.siteName[store.currentSite]}
             </p>
@@ -119,7 +120,7 @@ const Header = observer(() => {
 
         {store.switchChannel ? (
           <div className="w-full h-[200px] bg-black opacity-90 animate-right">
-            <div className="grid grid-cols-2 justify-center p-8 text-2xl font-bold pb-4 ">
+            <div className="grid grid-cols-2 justify-center p-8 text-2xl font-bold pb-4 cursor-pointer">
               <div
                 onClick={() => setSiteData(0, 69, "Classic EuroDance")}
                 className={

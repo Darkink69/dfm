@@ -5,14 +5,14 @@ import CardChannel from "./CardChannel";
 
 const FavoriteChannels = observer(() => {
   const [allChannels, setAllChannels] = useState([]);
-  const [allChannels2, setAllChannels2] = useState([]);
+  // const [allChannels2, setAllChannels2] = useState([]);
   const [allFavChannels, setAllFavChannels] = useState<any>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const fav = {
-    currentSite: 0,
-    channels_id: [69, 3, 6, 104, 183, 293, 296, 348, 355],
-  };
+  // const fav = {
+  //   currentSite: 0,
+  //   channels_id: [69, 3, 6, 104, 183, 293, 296, 348, 355],
+  // };
 
   const getAllChannels = () => {
     fetch(
@@ -25,17 +25,17 @@ const FavoriteChannels = observer(() => {
       .catch((error) => console.error(error));
   };
 
-  const getAllChannels2 = (item: string) => {
-    fetch(`https://api.audioaddict.com/v1/${item}/track_history.json`)
-      .then((response) => response.json())
-      .then((data) => console.log(data))
-      .catch((error) => console.error(error));
-  };
+  // const getAllChannels2 = (item: string) => {
+  //   fetch(`https://api.audioaddict.com/v1/${item}/track_history.json`)
+  //     .then((response) => response.json())
+  //     .then((data) => console.log(data))
+  //     .catch((error) => console.error(error));
+  // };
 
   useEffect(() => {
     let favChannels: any[] | ((prevState: never[]) => never[]) = [];
     Object.values(allChannels).map((item: any) => {
-      if (fav.channels_id.includes(item.channel_id)) {
+      if (store.favoriteChannels.channels_id.includes(item.channel_id)) {
         console.log(item.channel_id);
         favChannels.push(item);
       }
@@ -46,10 +46,10 @@ const FavoriteChannels = observer(() => {
   }, [allChannels]);
 
   useEffect(() => {
-    store.sites.map((item) => {
-      // console.log(item);
-      getAllChannels2(item);
-    });
+    // store.sites.map((item) => {
+    //   // console.log(item);
+    //   getAllChannels2(item);
+    // });
     getAllChannels();
   }, []);
 
@@ -63,6 +63,7 @@ const FavoriteChannels = observer(() => {
                 getAllChannels();
                 console.log("FAV!!");
               }
+              store.setSpinView("");
               store.setAllFavChannelsView(
                 store.allFavChannelsView ? false : true
               );
@@ -70,7 +71,7 @@ const FavoriteChannels = observer(() => {
             }}
             className="w-full text-white text-xl cursor-pointer"
           >
-            Любимые каналы
+            Любимые каналы {store.siteName[store.currentSite]}
           </div>
           <svg
             className={store.allFavChannelsView ? "m-2" : "-rotate-90 m-2"}

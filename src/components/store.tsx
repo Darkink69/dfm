@@ -1,7 +1,6 @@
 import { makeAutoObservable } from "mobx";
 
 class Store {
-  // site = "radiotunes";
   sites = [
     "di",
     "rockradio",
@@ -11,7 +10,6 @@ class Store {
     "zenradio",
   ];
   siteName = ["Electronic", "Rock", "Tunes", "Jazz", "Classical", "Zen"];
-  // currentSite = 0;
   currentSite = JSON.parse(localStorage.getItem("currentSite") || "0") || 0;
   channel_id = JSON.parse(localStorage.getItem("channel_id") || "69") || 69;
   channel_name = localStorage.getItem("channel_name") || "Classic EuroDance";
@@ -21,6 +19,8 @@ class Store {
   allFavChannelsView = true;
   allChannelsView = false;
   allTracksOfflineView = false;
+
+  spinView = "";
 
   // defaultChannels = [
   //   { currentSite: 0, channel_id: 69 },
@@ -37,6 +37,12 @@ class Store {
     asset_url: "",
   };
   allStationsNames = [{}];
+
+  favoriteChannels = {
+    currentSite: 0,
+    channels_id:
+      JSON.parse(localStorage.getItem("favoriteChannels") || "[]") || [],
+  };
 
   onAir = false;
   switchChannel = false;
@@ -95,13 +101,34 @@ class Store {
 
   setOnAir(air: boolean) {
     this.onAir = air;
-    // console.log(air);
+    console.log(air, "store!!");
   }
 
-  //   checkEvents() {
-  //     this.favoriteEvents =
-  //       JSON.parse(localStorage.getItem("favoriteEvents") || "[]") || [];
-  //   }
+  setSpinView(view: string) {
+    this.spinView = view;
+  }
+
+  setfavoriteChannels(id: number) {
+    if (this.favoriteChannels.channels_id.includes(id)) {
+      for (
+        let i = 0, len = this.favoriteChannels.channels_id.length;
+        i < len;
+        i++
+      ) {
+        if (this.favoriteChannels.channels_id[i] === id) {
+          this.favoriteChannels.channels_id.splice(i, 1);
+          break;
+        }
+      }
+    } else {
+      this.favoriteChannels.channels_id.push(id);
+    }
+    localStorage.setItem(
+      "favoriteChannels",
+      JSON.stringify(this.favoriteChannels.channels_id)
+    );
+    this.allFavChannelsView = false;
+  }
 }
 
 export default new Store();

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import "react-h5-audio-player/lib/styles.css";
 import store from "./store";
 import CardChannel from "./CardChannel";
+// import WaitAnimation from "./Waiting";
 
 const AllChannels = observer(() => {
   const [allChannels, setAllChannels] = useState([]);
@@ -32,13 +33,17 @@ const AllChannels = observer(() => {
             className="w-full text-white text-xl cursor-pointer"
             onClick={() => {
               if (!store.allChannelsView) {
-                getAllChannels();
+                {
+                  getAllChannels();
+                }
               }
+
               store.setAllChannelsView(store.allChannelsView ? false : true);
               store.setSizePlayer(false);
+              // store.setSpinView("");
             }}
           >
-            Все каналы
+            Все каналы {store.siteName[store.currentSite]}
           </div>
           <svg
             className={store.allChannelsView ? "m-2" : "-rotate-90 m-2"}

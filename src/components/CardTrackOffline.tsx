@@ -36,7 +36,7 @@ const CardTrackOffline = observer(({ data }: any) => {
 
   return (
     <>
-      <div className="p-2">
+      <div className="p-2 sm:p-4">
         <div className="flex justify-between">
           <div
             className="flex cursor-pointer"
@@ -49,16 +49,16 @@ const CardTrackOffline = observer(({ data }: any) => {
             }
           >
             <img
-              className="w-[80px] h-[80px]"
+              className="w-[80px] sm:w-[120px] h-[80px] sm:h-[120px]"
               src={
                 data.asset_url === null
                   ? "https://cdn-images.audioaddict.com/a/7/3/c/6/c/a73c6ccba5f077b956835714d7e3d9a8.png"
-                  : data.asset_url + "?size=80x80&quality=90"
+                  : data.asset_url + "?size=120x120&quality=90"
               }
               alt=""
             />
             <div className="pr-8 pl-4">
-              <p className="text-white text-sm">{data.track}</p>
+              <p className="text-white text-sm sm:text-xl">{data.track}</p>
               <p className="text-gray-500 text-sm">
                 {Math.floor(data.length / 60)}:
                 {data.length % 60 < 10
@@ -68,7 +68,10 @@ const CardTrackOffline = observer(({ data }: any) => {
             </div>
           </div>
 
-          <div onClick={() => setViewItem(viewItem ? false : true)}>
+          <div
+            onClick={() => setViewItem(viewItem ? false : true)}
+            className="m-2 ml-6 cursor-pointer"
+          >
             <svg width="3" height="18" viewBox="0 0 4 24" fill="none">
               <path
                 d="M4 11.6241C4 10.5314 3.10457 9.64562 2 9.64562C0.89543 9.64562 -1.34244e-07 10.5314 -8.64816e-08 11.6241C-3.87191e-08 12.7168 0.895431 13.6026 2 13.6026C3.10457 13.6026 4 12.7168 4 11.6241Z"
@@ -86,21 +89,53 @@ const CardTrackOffline = observer(({ data }: any) => {
           </div>
           <div
             onClick={() => setViewItem(viewItem ? false : true)}
-            className="absolute opacity-80 right-10"
+            className="absolute opacity-80"
           >
             {viewItem ? (
-              <div className="w-full p-4 bg-black">
+              <div className="relative w-full p-4 bg-black cursor-pointer left-40">
                 <div
                   onClick={() => downloadTrack()}
                   className="text-white text-xl pb-2"
                 >
-                  Скачать
+                  <div className="flex items-center">
+                    <svg
+                      className="mr-2"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                    >
+                      <path
+                        d="M14 9V13.0003H2V9H0V15.0181H3.3536H16V11.4818V9H14Z"
+                        fill="white"
+                      />
+                      <path
+                        d="M6.33233 9.81408L7.99982 11.4819L10.9188 8.56259L13.004 6.47764H13.0026H9V0.492188H7V6.47764H2.99561L6.33233 9.81408Z"
+                        fill="white"
+                      />
+                    </svg>
+                    Скачать
+                  </div>
                 </div>
                 <div
                   onClick={() => addPlaylist()}
-                  className="text-white text-xl"
+                  className="text-white text-xl pb-2"
                 >
-                  В плейлист
+                  <div className="flex items-center">
+                    <svg
+                      className="mr-2"
+                      width="16"
+                      height="15"
+                      viewBox="0 0 16 15"
+                      fill="none"
+                    >
+                      <path
+                        d="M8 0L9.79611 5.52786H15.6085L10.9062 8.94427L12.7023 14.4721L8 11.0557L3.29772 14.4721L5.09383 8.94427L0.391548 5.52786H6.20389L8 0Z"
+                        fill="white"
+                      />
+                    </svg>
+                    В плейлист
+                  </div>
                 </div>
               </div>
             ) : (

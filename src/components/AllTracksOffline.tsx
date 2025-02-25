@@ -51,11 +51,12 @@ const AllTracksOffline = observer(() => {
       >
         <div
           className="flex items-baseline pb-2 bg-slate-800"
-          onClick={() =>
+          onClick={() => {
+            store.setSpinView("");
             store.setAllTracksOfflineView(
               store.allTracksOfflineView ? false : true
-            )
-          }
+            );
+          }}
         >
           <div className="w-full text-white text-xl cursor-pointer">
             Все треки {store.channel_name}
@@ -70,7 +71,7 @@ const AllTracksOffline = observer(() => {
             <path d="M1 1L8 9L15 1" stroke="white" strokeWidth="2" />
           </svg>
         </div>
-        <div className="grid sm:grid-cols-5 grid-cols-1">
+        <div className="grid sm:grid-cols-3 grid-cols-1">
           {store.allTracksOfflineView
             ? showOfflineTracks?.map((item: any) => {
                 return <CardTrackOffline data={item} key={item.id} />;
@@ -78,7 +79,10 @@ const AllTracksOffline = observer(() => {
             : ""}
         </div>
         <div
-          onClick={() => setShowTracks(showTracks + 30)}
+          onClick={() => {
+            store.setSpinView("");
+            setShowTracks(showTracks + 30);
+          }}
           className="text-white pt-4 text-lg underline cursor-pointer"
         >
           {store.allTracksOfflineView ? "Показать еще" : ""}

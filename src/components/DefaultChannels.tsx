@@ -4,9 +4,7 @@ import { observer } from "mobx-react-lite";
 
 const defaultChannels = observer(() => {
   return (
-    <>
-      <div className="fixed z-20 w-full h-full bg-slate-800"></div>
-    </>
+    <>{/* <div className="fixed z-20 w-full h-full bg-slate-800"></div> */}</>
   );
 });
 
