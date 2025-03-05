@@ -7,6 +7,7 @@ import Header from "./components/Header";
 import Player from "./components/Player";
 import "./index.css";
 import WaitAnimation from "./components/Waiting";
+import SearchTracks from "./components/searchTracks";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
       <BlackBG />
       <div className="bg-slate-700 container mx-auto h-full">
         <div className="h-full bg-slate-800 ">
+          <SearchTracks />
           <FavoriteChannels />
           <AllChannels />
           <AllTracksOffline />

@@ -4,14 +4,8 @@ import store from "./store";
 
 const CardTrackOffline = observer(({ data }: any) => {
   const [viewItem, setViewItem] = useState(false);
-  // const url = data?.content.assets[0].url.split("?")[0];
   const url = data.url;
-  // console.log(data);
   const audio_token = String(localStorage.getItem("data")).slice(1, -1);
-  // console.log(audio_token);
-  // const itemTrackMore = () => {
-
-  // }
 
   const downloadTrack = () => {
     try {

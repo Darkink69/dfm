@@ -36,11 +36,9 @@ const FavoriteChannels = observer(() => {
     let favChannels: any[] | ((prevState: never[]) => never[]) = [];
     Object.values(allChannels).map((item: any) => {
       if (store.favoriteChannels.channels_id.includes(item.channel_id)) {
-        console.log(item.channel_id);
         favChannels.push(item);
       }
     });
-    // console.log(favChannels);
     setAllFavChannels(favChannels);
     setIsLoaded(true);
   }, [allChannels]);
@@ -61,9 +59,8 @@ const FavoriteChannels = observer(() => {
             onClick={() => {
               if (!store.allFavChannelsView) {
                 getAllChannels();
-                console.log("FAV!!");
               }
-              store.setSpinView("");
+              // store.setSpinView("");
               store.setAllFavChannelsView(
                 store.allFavChannelsView ? false : true
               );

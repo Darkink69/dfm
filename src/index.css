@@ -6,6 +6,10 @@
   display: flex;
 }
 
+.rhap_main-controls {
+  visibility: hidden;
+}
+
 /* .rhap_volume-controls {
   display: hidden;
 } */

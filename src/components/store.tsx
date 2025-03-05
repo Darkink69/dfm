@@ -11,25 +11,18 @@ class Store {
   ];
   siteName = ["Electronic", "Rock", "Tunes", "Jazz", "Classical", "Zen"];
   currentSite = JSON.parse(localStorage.getItem("currentSite") || "0") || 0;
-  channel_id = JSON.parse(localStorage.getItem("channel_id") || "69") || 69;
+  channel_id: number =
+    JSON.parse(localStorage.getItem("channel_id") || "69") || 69;
   channel_name = localStorage.getItem("channel_name") || "Classic EuroDance";
-  // srcCurrentTrack = "";
+
   shuffle = false;
   bigPlayer = true;
   allFavChannelsView = true;
   allChannelsView = false;
   allTracksOfflineView = false;
+  searchView = false;
 
   spinView = "";
-
-  // defaultChannels = [
-  //   { currentSite: 0, channel_id: 69 },
-  //   { currentSite: 1, channel_id: 143 },
-  //   { currentSite: 2, channel_id: 38 },
-  //   { currentSite: 3, channel_id: 73 },
-  //   { currentSite: 4, channel_id: 360 },
-  //   { currentSite: 5, channel_id: 449 },
-  // ];
 
   currentPlaying = {
     track: "",
@@ -37,12 +30,15 @@ class Store {
     asset_url: "",
   };
   allStationsNames = [{}];
+  allStationIds: any = [];
 
   favoriteChannels = {
     currentSite: 0,
     channels_id:
       JSON.parse(localStorage.getItem("favoriteChannels") || "[]") || [],
   };
+
+  otherSite = false;
 
   onAir = false;
   switchChannel = false;
@@ -73,6 +69,11 @@ class Store {
     this.allStationsNames = allNames;
   }
 
+  setAllStationIds(ids: { id: number }[]) {
+    this.allStationIds = ids;
+    // console.log(this.allStationIds);
+  }
+
   setSizePlayer(size: boolean) {
     this.bigPlayer = size;
   }
@@ -101,7 +102,6 @@ class Store {
 
   setOnAir(air: boolean) {
     this.onAir = air;
-    console.log(air, "store!!");
   }
 
   setSpinView(view: string) {
@@ -128,6 +128,14 @@ class Store {
       JSON.stringify(this.favoriteChannels.channels_id)
     );
     this.allFavChannelsView = false;
+  }
+
+  setOtherSite(site: boolean) {
+    this.otherSite = site;
+  }
+
+  setSearchView(view: boolean) {
+    this.searchView = view;
   }
 }
 

@@ -10,16 +10,18 @@ const Player = observer(() => {
   const [dataTrack, setDataTrack] = useState([]);
   const [dataHistory, setDataHistory] = useState([]);
   const [dataChannels, setDataChannels] = useState([]);
+  const [allStationIds, setAllStationIds] = useState<any[]>([]);
   const [currentTrack, setCurrentTrack] = useState<any>();
   const [currentTrackId, setCurrentTrackId] = useState(null);
   const [currentTimePlay, setCurrentTimePlay] = useState(Number);
-  const [isPlaying, setIsPlaying] = useState(true);
-  // const timerIdRef = useRef<any>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
   const audioRef = useRef<any>(null);
   const svgRef = useRef<any>(null);
   const audio_tokens = [
     "7e938c7250620a6fa561a93e733224a3",
     "958b3ee79e1b5cac40b80a71a1bf463b",
+    "5b811a1b5306570f946a07351839e47b",
   ];
   const audio_token =
     audio_tokens[Math.floor(Math.random() * audio_tokens.length)];
@@ -35,7 +37,10 @@ const Player = observer(() => {
     )
       .then((response) => response.json())
       .then((data) => setDataTrack(data.tracks))
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        console.error(error);
+        console.log("Audio_token problem");
+      });
   };
 
   const getHistory = () => {
@@ -72,6 +77,68 @@ const Player = observer(() => {
     getTracks();
   };
 
+  const setSpecialNextChannel = () => {
+    store.setSpinView("");
+    console.log(store.favoriteChannels.channels_id);
+    let nextChannel = store.channel_id;
+
+    // console.log(store.allStationIds.includes(nextChannel), typeof nextChannel);
+    // console.log(store.otherSite, "эта другая станция?");
+    for (
+      let i = 0, len = store.favoriteChannels.channels_id.length;
+      i < len;
+      i++
+    ) {
+      if (
+        store.favoriteChannels.channels_id[i] === store.channel_id &&
+        allStationIds.includes(nextChannel)
+      ) {
+        console.log(store.channel_id);
+        if (i >= len - 1) {
+          nextChannel = store.favoriteChannels.channels_id[0];
+        } else {
+          nextChannel = store.favoriteChannels.channels_id[i + 1];
+        }
+        break;
+      }
+      // nextChannel = store.favoriteChannels.channels_id[0];
+    }
+
+    // const nextChannel =
+    //   store.favoriteChannels.channels_id[
+    //     Math.floor(Math.random() * store.favoriteChannels.channels_id.length)
+    //   ];
+    // console.log(nextChannel);
+
+    store.setChannel_id(nextChannel);
+
+    // console.log(Object.values(store.allStationsNames));
+    store.allStationsNames.map((item: any) => {
+      if (nextChannel === item.id) {
+        store.setChannel_name(item.name);
+      }
+    });
+
+    // store.setSizePlayer(true);
+  };
+
+  const downloadTrack = () => {
+    try {
+      fetch(`${store.currentPlaying.url}`)
+        .then((response) => response.blob())
+        .then((blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `${store.currentPlaying.track}.mp4`;
+          a.click();
+          window.URL.revokeObjectURL(url);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   // useEffect(() => {
   //   audioRef.current?.setJumpTime(currentTimePlay);
   // }, [currentTimePlay]);
@@ -106,22 +173,27 @@ const Player = observer(() => {
         setCurrentTrackId(item.track_id);
         const timeStamp = item?.started;
         const timeLeft = Math.floor((Date.now() - timeStamp * 1000) / 1000);
-        console.log(timeLeft);
+        // console.log(timeLeft);
         setCurrentTimePlay(timeLeft * 1000);
       }
     });
 
-    console.log(audioRef.current?.duration);
+    // console.log(audioRef.current?.duration);
     audioRef.current?.setJumpTime(currentTimePlay);
   }, [dataHistory]);
 
   useEffect(() => {
     const allNames: { id: number; name: string }[] = [];
+    const allIds: { id: number }[] = [];
     dataChannels.map((item: any) => {
       allNames.push({ id: item.id, name: item.name });
+      allIds.push(item.id);
+      // console.log(typeof item.id);
     });
-    // console.log(allNames);
+    // console.log(typeof allIds, allIds);
     store.setAllStationsNames(allNames);
+    setAllStationIds(allIds);
+    store.setAllStationIds(allIds);
   }, [dataChannels]);
 
   useEffect(() => {
@@ -134,13 +206,6 @@ const Player = observer(() => {
       // console.log(audioRef.current.props);
     }
   }, []);
-
-  // useEffect(() => {
-  //   // allChannelTracks?.map((item: any) => {
-  //   //   console.log(item.track);
-  //   // });
-  //   setIsLoaded(true);
-  // }, [allChannelTracks]);
 
   return (
     <>
@@ -243,6 +308,7 @@ const Player = observer(() => {
               {
                 setIsPlaying(true);
                 document.title = `${store.currentPlaying.track}`;
+                // store.setAllFavChannelsView(true);
               }
             }}
             onPause={() => {
@@ -253,10 +319,11 @@ const Player = observer(() => {
             onEnded={() => {
               store.setSpinView("");
               getNextTrack();
+              // store.setAllFavChannelsView(false);
               console.log("END!!");
             }}
             // onSeeking={() => console.log("onSeeking")}
-            onSeeked={() => store.setOnAir(false)}
+            // onSeeked={() => store.setOnAir(false)}
             // onPlaying={() => console.log("playing?")}
             // onWaiting={() => {
             //   store.setSpinView("");
@@ -275,7 +342,7 @@ const Player = observer(() => {
               // getNextTrack();
 
               // audioRef.current.audio.current.play();
-              // store.setOnAir(true);
+              // store.setOnAir(false);
               console.log(store.onAir, "butt 1");
             }}
           >
@@ -286,6 +353,7 @@ const Player = observer(() => {
             className="relative bottom-6 left-12 w-[70px]"
             onClick={() => {
               console.log(currentTimePlay);
+              // getNextTrack();
               audioRef.current?.setJumpTime(currentTimePlay);
               audioRef.current.audio.current.play();
               store.setOnAir(true);
@@ -299,7 +367,8 @@ const Player = observer(() => {
         <div
           className="fixed bottom-8 right-12 w-[50px]"
           onClick={() => {
-            audioRef.current.audio.current.play();
+            setSpecialNextChannel();
+            // audioRef.current.audio.current.play();
             // store.setOnAir(false);
           }}
         >
@@ -352,17 +421,75 @@ const Player = observer(() => {
                 </div>
               )}
 
-              <img
-                onClick={() => store.setSizePlayer(false)}
-                className="w-full sm:w-[300px]"
-                // src={"https:" + currentTrack?.asset_url}
-                src={
-                  store.currentPlaying.asset_url === "https:null"
-                    ? "//cdn-images.audioaddict.com/a/7/3/c/6/c/a73c6ccba5f077b956835714d7e3d9a8.png"
-                    : store.currentPlaying.asset_url
-                }
-                alt=""
-              />
+              <div className="w-full sm:w-[300px]">
+                {store.favoriteChannels.channels_id.includes(
+                  store.channel_id
+                ) ? (
+                  <div
+                    className="absolute top-[60%] right-20 cursor-pointer opacity-50 hover:opacity-100"
+                    onClick={() => {
+                      // console.log(allStationIds);
+                      // // const y = [1, 2, 3];
+                      // const x = 10000;
+                      // if (allStationIds.includes(x)) {
+                      //   console.log(x, "HERE!");
+                      // }
+                      const array1 = ["Text1", "Text2", "Text3"];
+                      const aaray2 = ["Text1", "Text3"];
+                      console.log(aaray2.every((x) => array1.includes(x)));
+                    }}
+                  >
+                    <svg width="29" height="27" viewBox="0 0 29 27" fill="none">
+                      <path
+                        d="M14.5 1.23607L17.0289 9.01925C17.2967 9.8433 18.0646 10.4012 18.931 10.4012H27.1147L20.494 15.2115C19.793 15.7208 19.4997 16.6235 19.7674 17.4476L22.2963 25.2307L15.6756 20.4205C14.9746 19.9112 14.0254 19.9112 13.3244 20.4205L6.70366 25.2307L9.23257 17.4476C9.50031 16.6235 9.207 15.7208 8.50602 15.2115L1.88525 10.4012L10.069 10.4012C10.9354 10.4012 11.7033 9.8433 11.9711 9.01925L14.5 1.23607Z"
+                        fill="#3399FF"
+                        stroke="#3399FF"
+                        strokeWidth="2"
+                      />
+                    </svg>
+                  </div>
+                ) : (
+                  <div
+                    className="absolute top-[60%] right-20 cursor-pointer opacity-50 hover:opacity-100"
+                    // onClick={() => store.setfavoriteChannels(store.channel_id)}
+                  >
+                    <svg width="29" height="27" viewBox="0 0 29 27" fill="none">
+                      <path
+                        d="M14.5 1.23607L17.0289 9.01925C17.2967 9.8433 18.0646 10.4012 18.931 10.4012H27.1147L20.494 15.2115C19.793 15.7208 19.4997 16.6235 19.7674 17.4476L22.2963 25.2307L15.6756 20.4205C14.9746 19.9112 14.0254 19.9112 13.3244 20.4205L6.70366 25.2307L9.23257 17.4476C9.50031 16.6235 9.207 15.7208 8.50603 15.2115L7.91824 16.0205L8.50602 15.2115L1.88525 10.4012L10.069 10.4012C10.9354 10.4012 11.7033 9.8433 11.9711 9.01925L14.5 1.23607Z"
+                        stroke="#3399FF"
+                        stroke-width="2"
+                      />
+                    </svg>
+                  </div>
+                )}
+                <div
+                  className="absolute top-[60.5%] right-10 cursor-pointer opacity-50 hover:opacity-100"
+                  onClick={() => downloadTrack()}
+                >
+                  <svg width="24" height="22" viewBox="0 0 24 22" fill="none">
+                    <path
+                      d="M20.385 13.2305V18.1655H3.615V13.2305H0V21.7805H24V13.2305H20.385Z"
+                      fill="#3399FF"
+                    />
+                    <path
+                      d="M9.495 13.98L12 16.485L16.38 12.105L19.515 8.985H14.55V0H9.465V8.985H4.5L9.51 13.995L9.495 13.98Z"
+                      fill="#3399FF"
+                    />
+                  </svg>
+                </div>
+
+                <img
+                  onClick={() => store.setSizePlayer(false)}
+                  // src={"https:" + currentTrack?.asset_url}
+                  src={
+                    store.currentPlaying.asset_url === "https:null"
+                      ? "//cdn-images.audioaddict.com/a/7/3/c/6/c/a73c6ccba5f077b956835714d7e3d9a8.png"
+                      : store.currentPlaying.asset_url
+                  }
+                  alt=""
+                />
+              </div>
+
               <p
                 onClick={() => store.setSizePlayer(false)}
                 className="text-sky-400 text-base font-bold"
@@ -452,8 +579,9 @@ const Player = observer(() => {
             <div
               className="fixed bottom-7 right-0 w-[50px]"
               onClick={() => {
-                audioRef.current.audio.current.play();
-                store.setOnAir(false);
+                setSpecialNextChannel();
+                // audioRef.current.audio.current.play();
+                // store.setOnAir(false);
               }}
             >
               <svg width="19" height="24" viewBox="0 0 19 24" fill="none">

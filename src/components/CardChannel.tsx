@@ -11,8 +11,6 @@ const CardChannel = observer(({ data }: any) => {
     store.setChannel_id(data.channel_id);
     store.setChannel_name(name);
     store.setSizePlayer(true);
-    // localStorage.setItem("channel_id", JSON.stringify(data.channel_id));
-    // localStorage.setItem("channel_name", name);
   };
 
   useEffect(() => {
