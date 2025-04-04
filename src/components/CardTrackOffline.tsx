@@ -34,13 +34,14 @@ const CardTrackOffline = observer(({ data }: any) => {
         <div className="flex justify-between">
           <div
             className="flex cursor-pointer"
-            onClick={() =>
+            onClick={() => {
               store.setCurrentPlaying({
                 track: data?.track,
                 url: `https:${url}?${audio_token}`,
                 asset_url: data.asset_url,
-              })
-            }
+              });
+              store.setOnAir(false);
+            }}
           >
             <img
               className="w-[80px] sm:w-[120px] h-[80px] sm:h-[120px]"

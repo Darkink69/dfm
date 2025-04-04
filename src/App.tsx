@@ -7,7 +7,9 @@ import Header from "./components/Header";
 import Player from "./components/Player";
 import "./index.css";
 import WaitAnimation from "./components/Waiting";
-import SearchTracks from "./components/searchTracks";
+import SearchTracks from "./components/SearchChannels";
+import Menu from "./components/Humburger";
+import Error from "./components/Error";
 
 function App() {
   return (
@@ -17,7 +19,9 @@ function App() {
       <div className="fixed bg-black z-50 h-[60px] w-full shadow-md">
         <Header />
       </div>
+      <Error />
       <BlackBG />
+      <Menu />
       <div className="bg-slate-700 container mx-auto h-full">
         <div className="h-full bg-slate-800 ">
           <SearchTracks />

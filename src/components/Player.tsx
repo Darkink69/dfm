@@ -9,12 +9,13 @@ import OffAir from "./offAir";
 const Player = observer(() => {
   const [dataTrack, setDataTrack] = useState([]);
   const [dataHistory, setDataHistory] = useState([]);
-  const [dataChannels, setDataChannels] = useState([]);
-  const [allStationIds, setAllStationIds] = useState<any[]>([]);
+  const [dataChannels, setDataChannels] = useState<any>({});
+  // const [allStationIds, setAllStationIds] = useState<any[]>([]);
   const [currentTrack, setCurrentTrack] = useState<any>();
   const [currentTrackId, setCurrentTrackId] = useState(null);
   const [currentTimePlay, setCurrentTimePlay] = useState(Number);
   const [isPlaying, setIsPlaying] = useState(false);
+  // const [isLoaded, setIsLoaded] = useState(false);
 
   const audioRef = useRef<any>(null);
   const svgRef = useRef<any>(null);
@@ -22,6 +23,8 @@ const Player = observer(() => {
     "7e938c7250620a6fa561a93e733224a3",
     "958b3ee79e1b5cac40b80a71a1bf463b",
     "5b811a1b5306570f946a07351839e47b",
+    "5f83014c79ad672b674d5f8a9464bec4",
+    "8a977c267a19a3e713019e93a8cc501d",
   ];
   const audio_token =
     audio_tokens[Math.floor(Math.random() * audio_tokens.length)];
@@ -40,6 +43,8 @@ const Player = observer(() => {
       .catch((error) => {
         console.error(error);
         console.log("Audio_token problem");
+        store.setServerError(true);
+        store.setSizePlayer(false);
       });
   };
 
@@ -51,18 +56,36 @@ const Player = observer(() => {
     )
       .then((response) => response.json())
       .then((data) => setDataHistory(data))
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        console.error(error);
+        console.log("api audioaddict problem..");
+        store.setServerError(true);
+        store.setSizePlayer(false);
+      });
   };
 
   const getChannels = () => {
-    fetch(
-      `https://api.audioaddict.com/v1/${
-        store.sites[store.currentSite]
-      }/channels.json`
-    )
-      .then((response) => response.json())
-      .then((data) => setDataChannels(data))
-      .catch((error) => console.error(error));
+    // собираем инфо о всех каналах (?)
+    const infoCh: any = [];
+    store.sites.map((item: any) => {
+      // console.log(item);
+      fetch(`https://api.audioaddict.com/v1/${item}/channels.json`)
+        .then((response) => response.json())
+        .then((data) => {
+          Object.values(data).map((i: any) => {
+            let ch = {
+              id: i.id,
+              network_id: i.network_id,
+              name: i.name,
+              description_short: i.description_short,
+            };
+            // console.log(infoCh);
+            infoCh.push(ch);
+            setDataChannels((prev: any) => ({ ...prev, infoCh }));
+          });
+        })
+        .catch((error) => console.error(error));
+    });
   };
 
   const getAudioToken = () => {
@@ -75,51 +98,67 @@ const Player = observer(() => {
   const getNextTrack = () => {
     getHistory();
     getTracks();
+    store.setOnAir(true);
   };
 
   const setSpecialNextChannel = () => {
     store.setSpinView("");
-    console.log(store.favoriteChannels.channels_id);
+    store.setOnAir(true);
     let nextChannel = store.channel_id;
 
-    // console.log(store.allStationIds.includes(nextChannel), typeof nextChannel);
-    // console.log(store.otherSite, "эта другая станция?");
-    for (
-      let i = 0, len = store.favoriteChannels.channels_id.length;
-      i < len;
-      i++
-    ) {
-      if (
-        store.favoriteChannels.channels_id[i] === store.channel_id &&
-        allStationIds.includes(nextChannel)
+    const channelNames = JSON.parse(localStorage.getItem("ch") || "[]");
+    if (store.favoriteChannels.channels_id.length <= 1) {
+      // console.log(channelNames.length, "channelNames");
+      let index = channelNames.findIndex(
+        (obj: { id: number }) => obj.id === nextChannel
+      );
+      if (index === 430) {
+        index = 0;
+      }
+      // console.log(channelNames[index], index);
+      store.setChannel_id(channelNames[index + 1].id);
+      store.setChannel_name(channelNames[index + 1].name);
+      store.setCurrentSite(
+        store.network_ids.indexOf(channelNames[index + 1].network_id)
+      );
+    } else {
+      for (
+        let i = 0, len = store.favoriteChannels.channels_id.length;
+        i < len;
+        i++
       ) {
-        console.log(store.channel_id);
-        if (i >= len - 1) {
-          nextChannel = store.favoriteChannels.channels_id[0];
-        } else {
-          nextChannel = store.favoriteChannels.channels_id[i + 1];
+        if (store.favoriteChannels.channels_id[i] === store.channel_id) {
+          console.log(store.channel_id);
+          if (i >= len - 1) {
+            nextChannel = store.favoriteChannels.channels_id[0];
+          } else {
+            nextChannel = store.favoriteChannels.channels_id[i + 1];
+          }
+          break;
         }
-        break;
+        nextChannel = store.favoriteChannels.channels_id[0];
       }
-      // nextChannel = store.favoriteChannels.channels_id[0];
+      store.setChannel_id(nextChannel);
+      channelNames.map((item: any) => {
+        if (
+          nextChannel === item.id &&
+          store.favoriteChannels.channels_id.includes(nextChannel)
+        ) {
+          // console.log(item);
+          store.setChannel_name(item.name);
+          store.setCurrentSite(store.network_ids.indexOf(item.network_id));
+        }
+      });
     }
+  };
 
-    // const nextChannel =
-    //   store.favoriteChannels.channels_id[
-    //     Math.floor(Math.random() * store.favoriteChannels.channels_id.length)
-    //   ];
-    // console.log(nextChannel);
-
-    store.setChannel_id(nextChannel);
-
-    // console.log(Object.values(store.allStationsNames));
-    store.allStationsNames.map((item: any) => {
-      if (nextChannel === item.id) {
-        store.setChannel_name(item.name);
-      }
-    });
-
-    // store.setSizePlayer(true);
+  const getOnAirTrack = () => {
+    console.log(currentTimePlay);
+    getNextTrack();
+    // audioRef.current?.setJumpTime(currentTimePlay);
+    // audioRef.current.audio.current.play();
+    store.setOnAir(true);
+    console.log(store.onAir, "butt 2");
   };
 
   const downloadTrack = () => {
@@ -146,7 +185,7 @@ const Player = observer(() => {
   useEffect(() => {
     getTracks();
     getHistory();
-    getChannels();
+    // getChannels();
     store.setAllTracksOfflineView(false);
     // getAllChannelTracks();
   }, [store.channel_id, store.currentSite]);
@@ -179,24 +218,40 @@ const Player = observer(() => {
     });
 
     // console.log(audioRef.current?.duration);
-    audioRef.current?.setJumpTime(currentTimePlay);
+    // audioRef.current?.setJumpTime(currentTimePlay);
   }, [dataHistory]);
 
   useEffect(() => {
+    // console.log(typeof dataChannels, dataChannels, "eff!");
+    if (Object.keys(dataChannels).length !== 0) {
+      // console.log(dataChannels.length);
+
+      localStorage.setItem("ch", JSON.stringify(dataChannels.infoCh));
+      store.setAllStationsDataLoaded(true);
+    }
+
     const allNames: { id: number; name: string }[] = [];
-    const allIds: { id: number }[] = [];
-    dataChannels.map((item: any) => {
+    // const allIds: { id: number }[] = [];
+    // ВСЕ ИМЕНА КАНАЛОВ!! ТУТ УСТАНАВЛИВАЕТ ПРАВИЛЬНО!
+    dataChannels.data?.map((item: any) => {
       allNames.push({ id: item.id, name: item.name });
-      allIds.push(item.id);
-      // console.log(typeof item.id);
+      // console.log(item.id, item.name);
+      // allIds.push(item.id);
     });
     // console.log(typeof allIds, allIds);
     store.setAllStationsNames(allNames);
-    setAllStationIds(allIds);
-    store.setAllStationIds(allIds);
+    // setAllStationIds(allIds);
+    // store.setAllStationIds(allIds);
   }, [dataChannels]);
 
   useEffect(() => {
+    const channelNames = JSON.parse(localStorage.getItem("ch") || "0");
+    if (channelNames === 0) {
+      getChannels();
+    } else {
+      store.setAllStationsDataLoaded(true);
+    }
+
     const os = navigator.userAgent;
     // if (os.includes("Android")) {
     //   console.log("Android");
@@ -345,6 +400,7 @@ const Player = observer(() => {
               // store.setOnAir(false);
               console.log(store.onAir, "butt 1");
             }}
+            title={"Вы слушаете прямой эфир канала"}
           >
             <OnAir />
           </div>
@@ -352,13 +408,15 @@ const Player = observer(() => {
           <div
             className="relative bottom-6 left-12 w-[70px]"
             onClick={() => {
-              console.log(currentTimePlay);
-              // getNextTrack();
-              audioRef.current?.setJumpTime(currentTimePlay);
-              audioRef.current.audio.current.play();
-              store.setOnAir(true);
-              console.log(store.onAir, "butt 2");
+              getOnAirTrack();
+              // console.log(currentTimePlay);
+              // // getNextTrack();
+              // audioRef.current?.setJumpTime(currentTimePlay);
+              // audioRef.current.audio.current.play();
+              // store.setOnAir(true);
+              // console.log(store.onAir, "butt 2");
             }}
+            title="Вернуться в прямой эфир"
           >
             <OffAir />
           </div>
@@ -375,7 +433,7 @@ const Player = observer(() => {
           <svg width="19" height="24" viewBox="0 0 19 24" fill="none">
             <path
               d="M0 4.01911V20.1411C0 21.7626 1.82816 22.7101 3.15303 21.7753L14.1839 13.9923C15.2906 13.2114 15.3174 11.5795 14.2369 10.7627L3.20609 2.4237C1.88859 1.42771 0 2.36751 0 4.01911Z"
-              fill="#C1272D"
+              fill="#ffff"
             />
             <rect
               x="15.1582"
@@ -383,20 +441,26 @@ const Player = observer(() => {
               width="3.78947"
               height="18.9474"
               rx="1.89474"
-              fill="#C1272D"
+              fill="#ffff"
             />
           </svg>
         </div>
       </div>
 
       {store.bigPlayer ? (
-        <div className="fixed bottom-0 bg-black z-20 h-4/6 sm:h-[450px] w-full animate-up">
+        <div className="fixed bottom-0 bg-black z-20 h-[80%] sm:h-[450px] w-full animate-up">
           <div>
             <div className="p-4 sm:flex block">
               {store.favoriteChannels.channels_id.includes(store.channel_id) ? (
                 <div
                   className="absolute top-10 right-10 cursor-pointer"
-                  onClick={() => store.setfavoriteChannels(store.channel_id)}
+                  onClick={() => {
+                    store.setfavoriteChannels(store.channel_id);
+                    // store.setfavoriteChannels({
+                    //   currentSite: store.currentSite,
+                    //   channel_id: store.channel_id,
+                    // });
+                  }}
                 >
                   <svg width="33" height="29" viewBox="0 0 33 29" fill="none">
                     <path
@@ -408,7 +472,10 @@ const Player = observer(() => {
               ) : (
                 <div
                   className="absolute top-10 right-10 cursor-pointer"
-                  onClick={() => store.setfavoriteChannels(store.channel_id)}
+                  onClick={() => {
+                    store.setfavoriteChannels(store.channel_id);
+                  }}
+                  title="Добавить в любимые каналы"
                 >
                   <svg width="33" height="29" viewBox="0 0 33 29" fill="none">
                     <path
@@ -425,20 +492,7 @@ const Player = observer(() => {
                 {store.favoriteChannels.channels_id.includes(
                   store.channel_id
                 ) ? (
-                  <div
-                    className="absolute top-[60%] right-20 cursor-pointer opacity-50 hover:opacity-100"
-                    onClick={() => {
-                      // console.log(allStationIds);
-                      // // const y = [1, 2, 3];
-                      // const x = 10000;
-                      // if (allStationIds.includes(x)) {
-                      //   console.log(x, "HERE!");
-                      // }
-                      const array1 = ["Text1", "Text2", "Text3"];
-                      const aaray2 = ["Text1", "Text3"];
-                      console.log(aaray2.every((x) => array1.includes(x)));
-                    }}
-                  >
+                  <div className="absolute top-[60%] right-20 cursor-pointer opacity-50 hover:opacity-100">
                     <svg width="29" height="27" viewBox="0 0 29 27" fill="none">
                       <path
                         d="M14.5 1.23607L17.0289 9.01925C17.2967 9.8433 18.0646 10.4012 18.931 10.4012H27.1147L20.494 15.2115C19.793 15.7208 19.4997 16.6235 19.7674 17.4476L22.2963 25.2307L15.6756 20.4205C14.9746 19.9112 14.0254 19.9112 13.3244 20.4205L6.70366 25.2307L9.23257 17.4476C9.50031 16.6235 9.207 15.7208 8.50602 15.2115L1.88525 10.4012L10.069 10.4012C10.9354 10.4012 11.7033 9.8433 11.9711 9.01925L14.5 1.23607Z"
@@ -452,12 +506,13 @@ const Player = observer(() => {
                   <div
                     className="absolute top-[60%] right-20 cursor-pointer opacity-50 hover:opacity-100"
                     // onClick={() => store.setfavoriteChannels(store.channel_id)}
+                    title="Добавить в избранные треки"
                   >
                     <svg width="29" height="27" viewBox="0 0 29 27" fill="none">
                       <path
                         d="M14.5 1.23607L17.0289 9.01925C17.2967 9.8433 18.0646 10.4012 18.931 10.4012H27.1147L20.494 15.2115C19.793 15.7208 19.4997 16.6235 19.7674 17.4476L22.2963 25.2307L15.6756 20.4205C14.9746 19.9112 14.0254 19.9112 13.3244 20.4205L6.70366 25.2307L9.23257 17.4476C9.50031 16.6235 9.207 15.7208 8.50603 15.2115L7.91824 16.0205L8.50602 15.2115L1.88525 10.4012L10.069 10.4012C10.9354 10.4012 11.7033 9.8433 11.9711 9.01925L14.5 1.23607Z"
                         stroke="#3399FF"
-                        stroke-width="2"
+                        strokeWidth="2"
                       />
                     </svg>
                   </div>
@@ -465,6 +520,7 @@ const Player = observer(() => {
                 <div
                   className="absolute top-[60.5%] right-10 cursor-pointer opacity-50 hover:opacity-100"
                   onClick={() => downloadTrack()}
+                  title="Скачать трек"
                 >
                   <svg width="24" height="22" viewBox="0 0 24 22" fill="none">
                     <path
@@ -490,17 +546,18 @@ const Player = observer(() => {
                 />
               </div>
 
-              <p
-                onClick={() => store.setSizePlayer(false)}
-                className="text-sky-400 text-base font-bold"
-              >
-                {store.channel_name}
-              </p>
-              <p className="text-white">{store.currentPlaying.track}</p>
+              <div className="pl-10">
+                <p
+                  onClick={() => store.setSizePlayer(false)}
+                  className="text-sky-400 sm:text-2xl text-base font-bold"
+                >
+                  {store.channel_name}
+                </p>
+                <p className="text-white sm:text-2xl">
+                  {store.currentPlaying.track}
+                </p>
+              </div>
             </div>
-            {/* <a href={currentTrack?.details_url}>
-              <p className="text-black">{currentTrack?.details_url}</p>
-            </a> */}
           </div>
         </div>
       ) : (
@@ -577,17 +634,18 @@ const Player = observer(() => {
               </div>
             )}
             <div
-              className="fixed bottom-7 right-0 w-[50px]"
+              className="fixed bottom-7 right-0 w-[50px] cursor-pointer"
               onClick={() => {
                 setSpecialNextChannel();
                 // audioRef.current.audio.current.play();
                 // store.setOnAir(false);
               }}
+              title="Следующий канал"
             >
               <svg width="19" height="24" viewBox="0 0 19 24" fill="none">
                 <path
                   d="M0 4.01911V20.1411C0 21.7626 1.82816 22.7101 3.15303 21.7753L14.1839 13.9923C15.2906 13.2114 15.3174 11.5795 14.2369 10.7627L3.20609 2.4237C1.88859 1.42771 0 2.36751 0 4.01911Z"
-                  fill="#C1272D"
+                  fill="#ffff"
                 />
                 <rect
                   x="15.1582"
@@ -595,7 +653,7 @@ const Player = observer(() => {
                   width="3.78947"
                   height="18.9474"
                   rx="1.89474"
-                  fill="#C1272D"
+                  fill="#ffff"
                 />
               </svg>
             </div>

@@ -26,23 +26,49 @@ const AllChannels = observer(() => {
   return (
     <>
       <div
-        className={store.allFavChannelsView ? "pl-4 pr-4 mt-8" : "pl-4 pr-4"}
+        className={
+          store.allFavChannelsView ? "pl-4 pr-4 mt-8" : "pl-4 pr-4 pb-2"
+        }
       >
-        <div className="flex items-baseline bg-slate-800">
-          <div
-            className="w-full text-white text-xl cursor-pointer"
-            onClick={() => {
-              if (!store.allChannelsView) {
-                {
-                  getAllChannels();
-                }
+        <div
+          className="flex items-center bg-slate-800"
+          onClick={() => {
+            if (!store.allChannelsView) {
+              {
+                getAllChannels();
               }
+            }
 
-              store.setAllChannelsView(store.allChannelsView ? false : true);
-              store.setSizePlayer(false);
-              // store.setSpinView("");
-            }}
-          >
+            store.setAllChannelsView(store.allChannelsView ? false : true);
+            store.setSizePlayer(false);
+            // store.setSpinView("");
+          }}
+        >
+          <svg width="24" height="21" viewBox="0 0 24 21" fill="none">
+            <rect
+              x="1"
+              y="6"
+              width="22"
+              height="14"
+              rx="2"
+              stroke="white"
+              strokeWidth="2"
+            />
+            <circle cx="8" cy="13" r="4" stroke="white" strokeWidth="2" />
+            <path
+              d="M20.2983 1.95448C20.8254 1.78975 21.1192 1.22887 20.9545 0.701725C20.7897 0.17458 20.2289 -0.119213 19.7017 0.04552L20.2983 1.95448ZM4.29827 6.95448L20.2983 1.95448L19.7017 0.04552L3.70173 5.04552L4.29827 6.95448Z"
+              fill="white"
+            />
+            <path
+              d="M14.5 9.5H19.5"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+
+          <div className="pl-4 w-full text-white text-xl cursor-pointer">
             Все каналы {store.siteName[store.currentSite]}
           </div>
           <svg

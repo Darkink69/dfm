@@ -1,36 +1,31 @@
 import { observer } from "mobx-react-lite";
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 import store from "./store";
 
-const CardChannel = observer(({ data }: any) => {
-  const [name, setName] = useState("");
+const CardChannelFav = observer(({ data }: any) => {
+  // const [name, setName] = useState("");
   const wh = window.innerWidth < 640 ? 175 : 300;
 
   const setCurrentChannelId = () => {
     store.setSpinView("");
     store.setChannel_id(data.channel_id);
-    store.setChannel_name(name);
+    // store.setChannel_name(name);
     store.setSizePlayer(true);
-    store.setOnAir(true);
-    store.setCurrentSite(store.network_ids.indexOf(data.network_id));
   };
 
-  useEffect(() => {
-    if (store.allStationsDataLoaded) {
-      const channelNames = JSON.parse(localStorage.getItem("ch") || "[]");
-      Object.values(channelNames)?.map((item: any) => {
-        if (data.channel_id === item.id) {
-          setName(item.name);
-        }
-      });
-    }
-  }, [store.allStationsDataLoaded]);
+  // useEffect(() => {
+  //   store.allStationsNames.map((item: any) => {
+  //     if (data.channel_id === item.id) {
+  //       setName(item.name);
+  //     }
+  //   });
+  // }, [store.allStationsNames]);
 
   return (
     <>
       <div>
         <div onClick={() => setCurrentChannelId()} className="cursor-pointer">
-          <p className="text-sky-400 text-base sm:text-xl font-bold">{name}</p>
+          {/* <p className="text-sky-400 text-base sm:text-xl font-bold">{name}</p> */}
           <img
             src={
               data.art_url === null
@@ -48,4 +43,4 @@ const CardChannel = observer(({ data }: any) => {
   );
 });
 
-export default CardChannel;
+export default CardChannelFav;

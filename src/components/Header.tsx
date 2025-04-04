@@ -37,7 +37,7 @@ const Header = observer(() => {
             </svg>
           </div>
 
-          <div className="flex items-center">
+          <div className="flex items-center" title="Сменить музыкальный портал">
             <p
               onClick={() => {
                 store.setSwitchChannel(store.switchChannel ? false : true);
@@ -67,7 +67,9 @@ const Header = observer(() => {
                 store.setSizePlayer(false);
                 store.setAllFavChannelsView(false);
                 store.setAllChannelsView(false);
+                store.setAllTracksOfflineView(false);
               }}
+              title="Найти канал"
             >
               <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
                 <path
@@ -77,55 +79,59 @@ const Header = observer(() => {
                 />
               </svg>
             </div>
-
-            <svg
-              className=""
-              width="50"
-              height="50"
-              viewBox="0 0 50 50"
-              fill="none"
+            <div
+              className="cursor-pointer"
+              onClick={() => store.setMenuView(store.menuView ? false : true)}
             >
-              <circle
-                cx="25"
-                cy="25"
-                r="25"
-                fill="url(#paint0_linear_3409_4)"
-              />
-              <rect
-                x="16.428"
-                y="17.857"
-                width="17.1429"
-                height="1.80952"
-                fill="white"
-              />
-              <rect
-                x="16.428"
-                y="23.2854"
-                width="17.1429"
-                height="1.80952"
-                fill="white"
-              />
-              <rect
-                x="16.428"
-                y="29.619"
-                width="17.1429"
-                height="1.80952"
-                fill="white"
-              />
-              <defs>
-                <linearGradient
-                  id="paint0_linear_3409_4"
-                  x1="25"
-                  y1="0"
-                  x2="25"
-                  y2="50"
-                  gradientUnits="userSpaceOnUse"
-                >
-                  <stop stopColor="#26A69A" />
-                  <stop offset="1" stopColor="#05635A" />
-                </linearGradient>
-              </defs>
-            </svg>
+              <svg
+                className=""
+                width="50"
+                height="50"
+                viewBox="0 0 50 50"
+                fill="none"
+              >
+                <circle
+                  cx="25"
+                  cy="25"
+                  r="25"
+                  fill="url(#paint0_linear_3409_4)"
+                />
+                <rect
+                  x="16.428"
+                  y="17.857"
+                  width="17.1429"
+                  height="1.80952"
+                  fill="white"
+                />
+                <rect
+                  x="16.428"
+                  y="23.2854"
+                  width="17.1429"
+                  height="1.80952"
+                  fill="white"
+                />
+                <rect
+                  x="16.428"
+                  y="29.619"
+                  width="17.1429"
+                  height="1.80952"
+                  fill="white"
+                />
+                <defs>
+                  <linearGradient
+                    id="paint0_linear_3409_4"
+                    x1="25"
+                    y1="0"
+                    x2="25"
+                    y2="50"
+                    gradientUnits="userSpaceOnUse"
+                  >
+                    <stop stopColor="#26A69A" />
+                    <stop offset="1" stopColor="#05635A" />
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
           </div>
         </div>
 
@@ -156,7 +162,7 @@ const Header = observer(() => {
               </div>
               <div
                 onClick={() => {
-                  setSiteData(2, 38, "Classic Hip-Hop");
+                  setSiteData(2, 186, "90s Hits");
                 }}
                 className={
                   store.currentSite === 2
