@@ -16,6 +16,10 @@ class Store {
     JSON.parse(localStorage.getItem("channel_id") || "69") || 69;
   channel_name = localStorage.getItem("channel_name") || "Classic EuroDance";
   onlyChannelIds: any = [];
+  allTokens: any = [
+    "7e938c7250620a6fa561a93e733224a3",
+    "6c9ef0a46a96b4ae5021a44d1feaee6e",
+  ];
 
   allStationsData = [{}];
   allStationsDataLoaded = false;
@@ -25,6 +29,7 @@ class Store {
   allFavChannelsView = true;
   allChannelsView = false;
   allTracksOfflineView = false;
+  allStarTracksView = false;
   searchView = false;
   menuView = false;
   serverError = false;
@@ -56,6 +61,10 @@ class Store {
 
   constructor() {
     makeAutoObservable(this);
+  }
+
+  setAllTokens(allTokens: any) {
+    this.allTokens = allTokens;
   }
 
   setCurrentPlaying(currentPlaying: {
@@ -119,6 +128,10 @@ class Store {
 
   setAllTracksOfflineView(view: boolean) {
     this.allTracksOfflineView = view;
+  }
+
+  setAllStarTracksView(view: boolean) {
+    this.allStarTracksView = view;
   }
 
   setOnAir(air: boolean) {

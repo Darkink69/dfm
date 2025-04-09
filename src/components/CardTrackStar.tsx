@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import store from "./store";
 
-const CardTrackOffline = observer(({ data }: any) => {
+const CardTrackStar = observer(({ data }: any) => {
   const [viewItem, setViewItem] = useState(false);
   const url = data.url;
   const audio_token = String(localStorage.getItem("data")).slice(1, -1);
@@ -24,12 +24,12 @@ const CardTrackOffline = observer(({ data }: any) => {
     }
   };
 
-  const addPlaylist = () => {
-    const allStarTracks = JSON.parse(localStorage.getItem("stars") || "[]");
-    // const allStarTracks = [];
-    allStarTracks.push(data);
-    console.log("playlist", allStarTracks);
-    localStorage.setItem("stars", JSON.stringify(allStarTracks));
+  const removePlaylist = () => {
+    // const allStarTracks = JSON.parse(localStorage.getItem("stars") || "[]");
+    // // const allStarTracks = [];
+    // allStarTracks.push(data);
+    console.log("remove!");
+    // localStorage.setItem("stars", JSON.stringify(allStarTracks));
   };
 
   return (
@@ -45,6 +45,7 @@ const CardTrackOffline = observer(({ data }: any) => {
                 asset_url: data.asset_url,
               });
               store.setOnAir(false);
+              // store.setChannel_name("");
             }}
           >
             <img
@@ -117,23 +118,21 @@ const CardTrackOffline = observer(({ data }: any) => {
                   </div>
                 </div>
                 <div
-                  onClick={() => addPlaylist()}
+                  onClick={() => removePlaylist()}
                   className="text-white text-xl pb-2"
                 >
                   <div className="flex items-center">
                     <svg
                       className="mr-2"
-                      width="16"
-                      height="15"
-                      viewBox="0 0 16 15"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 18 18"
                       fill="none"
                     >
-                      <path
-                        d="M8 0L9.79611 5.52786H15.6085L10.9062 8.94427L12.7023 14.4721L8 11.0557L3.29772 14.4721L5.09383 8.94427L0.391548 5.52786H6.20389L8 0Z"
-                        fill="white"
-                      />
+                      <path d="M1 1L17 17" stroke="white" strokeWidth="2" />
+                      <path d="M17 1L1 17" stroke="white" strokeWidth="2" />
                     </svg>
-                    В плейлист
+                    Удалить
                   </div>
                 </div>
               </div>
@@ -147,4 +146,4 @@ const CardTrackOffline = observer(({ data }: any) => {
   );
 });
 
-export default CardTrackOffline;
+export default CardTrackStar;

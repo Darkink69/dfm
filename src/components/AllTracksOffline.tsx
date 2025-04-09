@@ -79,13 +79,15 @@ const AllTracksOffline = observer(() => {
     <>
       <div
         className={
-          store.allChannelsView ? "pl-4 pr-4 mt-8 pb-28" : "pl-4 pr-4 pb-28"
+          store.allChannelsView ? "pl-4 pr-4 mt-8 pb-8" : "pl-4 pr-4 pb-3"
         }
       >
         <div
           className="flex items-center pb-2 bg-slate-800"
           onClick={() => {
-            store.setSpinView("");
+            {
+              !store.allTracksOfflineView ? store.setSpinView("") : "";
+            }
             store.setAllTracksOfflineView(
               store.allTracksOfflineView ? false : true
             );
@@ -114,7 +116,10 @@ const AllTracksOffline = observer(() => {
           </svg>
 
           <div className="pl-4 w-full text-white text-xl cursor-pointer">
-            Все треки {store.channel_name}
+            Все треки{" "}
+            <span className="text-sky-400 font-semibold">
+              {store.channel_name}
+            </span>
           </div>
           <svg
             className={store.allTracksOfflineView ? "m-2" : "-rotate-90 m-2"}

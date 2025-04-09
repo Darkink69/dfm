@@ -16,6 +16,7 @@ const CardChannel = observer(({ data }: any) => {
   };
 
   useEffect(() => {
+    // console.log(data);
     if (store.allStationsDataLoaded) {
       const channelNames = JSON.parse(localStorage.getItem("ch") || "[]");
       Object.values(channelNames)?.map((item: any) => {

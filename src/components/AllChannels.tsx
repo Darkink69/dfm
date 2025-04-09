@@ -69,7 +69,10 @@ const AllChannels = observer(() => {
           </svg>
 
           <div className="pl-4 w-full text-white text-xl cursor-pointer">
-            Все каналы {store.siteName[store.currentSite]}
+            Все каналы{" "}
+            <span className="font-bold">
+              {store.siteName[store.currentSite]}
+            </span>
           </div>
           <svg
             className={store.allChannelsView ? "m-2" : "-rotate-90 m-2"}

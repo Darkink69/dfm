@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/react";
 import AllChannels from "./components/AllChannels";
 import AllTracksOffline from "./components/AllTracksOffline";
 import BlackBG from "./components/BlackBG";
@@ -10,10 +11,12 @@ import WaitAnimation from "./components/Waiting";
 import SearchTracks from "./components/SearchChannels";
 import Menu from "./components/Humburger";
 import Error from "./components/Error";
+import AllStarTracks from "./components/AllStarTracks";
 
 function App() {
   return (
     <>
+      <Analytics />
       <WaitAnimation />
       <div className="fixed -z-50 w-full h-full bg-slate-700"></div>
       <div className="fixed bg-black z-50 h-[60px] w-full shadow-md">
@@ -28,6 +31,7 @@ function App() {
           <FavoriteChannels />
           <AllChannels />
           <AllTracksOffline />
+          <AllStarTracks />
           <DefaultChannels />
         </div>
       </div>

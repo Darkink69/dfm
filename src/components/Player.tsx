@@ -12,6 +12,7 @@ const Player = observer(() => {
   const [dataChannels, setDataChannels] = useState<any>({});
   // const [allStationIds, setAllStationIds] = useState<any[]>([]);
   const [currentTrack, setCurrentTrack] = useState<any>();
+  // const [allTokens, setAllTokens] = useState<any>();
   const [currentTrackId, setCurrentTrackId] = useState(null);
   const [currentTimePlay, setCurrentTimePlay] = useState(Number);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -19,18 +20,23 @@ const Player = observer(() => {
 
   const audioRef = useRef<any>(null);
   const svgRef = useRef<any>(null);
-  const audio_tokens = [
-    "7e938c7250620a6fa561a93e733224a3",
-    "958b3ee79e1b5cac40b80a71a1bf463b",
-    "5b811a1b5306570f946a07351839e47b",
-    "5f83014c79ad672b674d5f8a9464bec4",
-    "8a977c267a19a3e713019e93a8cc501d",
-  ];
-  const audio_token =
-    audio_tokens[Math.floor(Math.random() * audio_tokens.length)];
-  const ts = Date.now();
+
+  const getAllTokens = () => {
+    fetch(
+      `https://qh8bsvaksadb2kj9.public.blob.vercel-storage.com/audio/audio.json`
+    )
+      .then((response) => response.json())
+      .then((data) => store.setAllTokens(data))
+      .catch((error) => {
+        console.error(error);
+        console.log("Audio_token problem");
+      });
+  };
 
   const getTracks = () => {
+    const audio_token =
+      store.allTokens[Math.floor(Math.random() * store.allTokens.length)];
+    const ts = Date.now();
     fetch(
       `https://api.audioaddict.com/v1/${
         store.sites[store.currentSite]
@@ -88,7 +94,7 @@ const Player = observer(() => {
     });
   };
 
-  const getAudioToken = () => {
+  const setAudioToken = () => {
     localStorage.setItem(
       "data",
       JSON.stringify(currentTrack?.content.assets[0].url.split("?")[1] || [])
@@ -178,6 +184,28 @@ const Player = observer(() => {
     }
   };
 
+  const addPlaylist = () => {
+    const allStarTracks = JSON.parse(localStorage.getItem("stars") || "[]");
+
+    Object.values(dataHistory).map((item: any) => {
+      if (item.channel_id === store.channel_id) {
+        const track = {
+          asset_url: item.art_url,
+          id: item.track_id,
+          length: item.length,
+          size: null,
+          track: item.track,
+          url: store.currentPlaying.url.split("?")[0].split("https:")[1],
+        };
+
+        console.log(track);
+        allStarTracks.push(track);
+      }
+    });
+
+    localStorage.setItem("stars", JSON.stringify(allStarTracks));
+  };
+
   // useEffect(() => {
   //   audioRef.current?.setJumpTime(currentTimePlay);
   // }, [currentTimePlay]);
@@ -201,7 +229,7 @@ const Player = observer(() => {
         });
       }
     });
-    getAudioToken();
+    setAudioToken();
     // audioRef.current?.setJumpTime(300);
     // audioRef.current?.setJumpTime(currentTimePlay);
   }, [dataTrack]);
@@ -245,6 +273,7 @@ const Player = observer(() => {
   }, [dataChannels]);
 
   useEffect(() => {
+    getAllTokens();
     const channelNames = JSON.parse(localStorage.getItem("ch") || "0");
     if (channelNames === 0) {
       getChannels();
@@ -333,8 +362,6 @@ const Player = observer(() => {
             }}
             autoPlay
             src={store.currentPlaying.url}
-            // src={store.srcCurrentTrack}
-            // src={"https:" + currentTrack?.content.assets[0].url}
             volume={
               navigator.userAgent.includes("iPhone") ||
               navigator.userAgent.includes("iPad") ||
@@ -374,7 +401,6 @@ const Player = observer(() => {
             onEnded={() => {
               store.setSpinView("");
               getNextTrack();
-              // store.setAllFavChannelsView(false);
               console.log("END!!");
             }}
             // onSeeking={() => console.log("onSeeking")}
@@ -489,34 +515,20 @@ const Player = observer(() => {
               )}
 
               <div className="w-full sm:w-[300px]">
-                {store.favoriteChannels.channels_id.includes(
-                  store.channel_id
-                ) ? (
-                  <div className="absolute top-[60%] right-20 cursor-pointer opacity-50 hover:opacity-100">
-                    <svg width="29" height="27" viewBox="0 0 29 27" fill="none">
-                      <path
-                        d="M14.5 1.23607L17.0289 9.01925C17.2967 9.8433 18.0646 10.4012 18.931 10.4012H27.1147L20.494 15.2115C19.793 15.7208 19.4997 16.6235 19.7674 17.4476L22.2963 25.2307L15.6756 20.4205C14.9746 19.9112 14.0254 19.9112 13.3244 20.4205L6.70366 25.2307L9.23257 17.4476C9.50031 16.6235 9.207 15.7208 8.50602 15.2115L1.88525 10.4012L10.069 10.4012C10.9354 10.4012 11.7033 9.8433 11.9711 9.01925L14.5 1.23607Z"
-                        fill="#3399FF"
-                        stroke="#3399FF"
-                        strokeWidth="2"
-                      />
-                    </svg>
-                  </div>
-                ) : (
-                  <div
-                    className="absolute top-[60%] right-20 cursor-pointer opacity-50 hover:opacity-100"
-                    // onClick={() => store.setfavoriteChannels(store.channel_id)}
-                    title="Добавить в избранные треки"
-                  >
-                    <svg width="29" height="27" viewBox="0 0 29 27" fill="none">
-                      <path
-                        d="M14.5 1.23607L17.0289 9.01925C17.2967 9.8433 18.0646 10.4012 18.931 10.4012H27.1147L20.494 15.2115C19.793 15.7208 19.4997 16.6235 19.7674 17.4476L22.2963 25.2307L15.6756 20.4205C14.9746 19.9112 14.0254 19.9112 13.3244 20.4205L6.70366 25.2307L9.23257 17.4476C9.50031 16.6235 9.207 15.7208 8.50603 15.2115L7.91824 16.0205L8.50602 15.2115L1.88525 10.4012L10.069 10.4012C10.9354 10.4012 11.7033 9.8433 11.9711 9.01925L14.5 1.23607Z"
-                        stroke="#3399FF"
-                        strokeWidth="2"
-                      />
-                    </svg>
-                  </div>
-                )}
+                <div
+                  className="absolute top-[60%] right-20 cursor-pointer opacity-50 hover:opacity-100"
+                  onClick={() => addPlaylist()}
+                  title="Добавить в избранные треки"
+                >
+                  <svg width="29" height="27" viewBox="0 0 29 27" fill="none">
+                    <path
+                      d="M14.5 1.23607L17.0289 9.01925C17.2967 9.8433 18.0646 10.4012 18.931 10.4012H27.1147L20.494 15.2115C19.793 15.7208 19.4997 16.6235 19.7674 17.4476L22.2963 25.2307L15.6756 20.4205C14.9746 19.9112 14.0254 19.9112 13.3244 20.4205L6.70366 25.2307L9.23257 17.4476C9.50031 16.6235 9.207 15.7208 8.50602 15.2115L1.88525 10.4012L10.069 10.4012C10.9354 10.4012 11.7033 9.8433 11.9711 9.01925L14.5 1.23607Z"
+                      fill="#3399FF"
+                      stroke="#3399FF"
+                      strokeWidth="2"
+                    />
+                  </svg>
+                </div>
                 <div
                   className="absolute top-[60.5%] right-10 cursor-pointer opacity-50 hover:opacity-100"
                   onClick={() => downloadTrack()}
