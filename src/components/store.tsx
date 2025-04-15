@@ -23,6 +23,7 @@ class Store {
 
   allStationsData = [{}];
   allStationsDataLoaded = false;
+  removeStarTrack = false;
 
   shuffle = false;
   bigPlayer = true;
@@ -144,6 +145,10 @@ class Store {
 
   setFavNamesSites(sites: any[]) {
     this.favNamesSites = sites;
+  }
+
+  setRemoveStarTrack(remove: boolean) {
+    this.removeStarTrack = remove;
   }
 
   // setfavoriteChannels2(id: any) {

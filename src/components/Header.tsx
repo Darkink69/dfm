@@ -81,7 +81,10 @@ const Header = observer(() => {
             </div>
             <div
               className="cursor-pointer"
-              onClick={() => store.setMenuView(store.menuView ? false : true)}
+              onClick={() => {
+                store.setMenuView(!store.menuView);
+                store.setSizePlayer(false);
+              }}
             >
               <svg
                 className=""

@@ -25,11 +25,15 @@ const CardTrackStar = observer(({ data }: any) => {
   };
 
   const removePlaylist = () => {
-    // const allStarTracks = JSON.parse(localStorage.getItem("stars") || "[]");
-    // // const allStarTracks = [];
-    // allStarTracks.push(data);
-    console.log("remove!");
-    // localStorage.setItem("stars", JSON.stringify(allStarTracks));
+    const allStarTracks = JSON.parse(localStorage.getItem("stars") || "[]");
+    const updatedStarTracks = allStarTracks.filter(
+      (item: { id: any }) => item.id !== data.id
+    );
+    // console.log(allStarTracks);
+    // console.log(updatedStarTracks);
+    // console.log("remove!");
+    localStorage.setItem("stars", JSON.stringify(updatedStarTracks));
+    store.setRemoveStarTrack(true);
   };
 
   return (

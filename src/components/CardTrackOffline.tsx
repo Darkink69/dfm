@@ -27,9 +27,16 @@ const CardTrackOffline = observer(({ data }: any) => {
   const addPlaylist = () => {
     const allStarTracks = JSON.parse(localStorage.getItem("stars") || "[]");
     // const allStarTracks = [];
-    allStarTracks.push(data);
+    if (
+      allStarTracks.filter((item: { id: any }) => item.id === data.id)
+        .length === 0
+    ) {
+      allStarTracks.push(data);
+    }
+    // allStarTracks.push(data);
     console.log("playlist", allStarTracks);
     localStorage.setItem("stars", JSON.stringify(allStarTracks));
+    store.setRemoveStarTrack(true);
   };
 
   return (
@@ -69,7 +76,7 @@ const CardTrackOffline = observer(({ data }: any) => {
 
           <div
             onClick={() => setViewItem(viewItem ? false : true)}
-            className="m-2 ml-6 cursor-pointer"
+            className="m-2 ml-6 w-2 cursor-pointer"
           >
             <svg width="3" height="18" viewBox="0 0 4 24" fill="none">
               <path
@@ -133,7 +140,7 @@ const CardTrackOffline = observer(({ data }: any) => {
                         fill="white"
                       />
                     </svg>
-                    В плейлист
+                    В избранные
                   </div>
                 </div>
               </div>

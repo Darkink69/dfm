@@ -1,4 +1,5 @@
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import AllChannels from "./components/AllChannels";
 import AllTracksOffline from "./components/AllTracksOffline";
 import BlackBG from "./components/BlackBG";
@@ -12,11 +13,13 @@ import SearchTracks from "./components/SearchChannels";
 import Menu from "./components/Humburger";
 import Error from "./components/Error";
 import AllStarTracks from "./components/AllStarTracks";
+// import HamburgerMenu from "./components/HamburgerMenu";
 
 function App() {
   return (
     <>
       <Analytics />
+      <SpeedInsights />
       <WaitAnimation />
       <div className="fixed -z-50 w-full h-full bg-slate-700"></div>
       <div className="fixed bg-black z-50 h-[60px] w-full shadow-md">
@@ -33,6 +36,7 @@ function App() {
           <AllTracksOffline />
           <AllStarTracks />
           <DefaultChannels />
+          {/* <HamburgerMenu /> */}
         </div>
       </div>
       <div className="">

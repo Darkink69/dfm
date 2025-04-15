@@ -198,12 +198,17 @@ const Player = observer(() => {
           url: store.currentPlaying.url.split("?")[0].split("https:")[1],
         };
 
-        console.log(track);
-        allStarTracks.push(track);
+        if (
+          allStarTracks.filter((item: { id: any }) => item.id === track.id)
+            .length === 0
+        ) {
+          allStarTracks.push(track);
+        }
       }
     });
 
     localStorage.setItem("stars", JSON.stringify(allStarTracks));
+    store.setRemoveStarTrack(true);
   };
 
   // useEffect(() => {

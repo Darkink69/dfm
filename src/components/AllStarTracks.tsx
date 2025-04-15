@@ -12,7 +12,9 @@ const AllStarTracks = observer(() => {
   useEffect(() => {
     const stars = JSON.parse(localStorage.getItem("stars") || "[]");
     setData(stars);
-  }, [store.allStarTracksView]);
+    // console.log(stars);
+    store.setRemoveStarTrack(false);
+  }, [store.allStarTracksView, store.removeStarTrack]);
 
   return (
     <>
