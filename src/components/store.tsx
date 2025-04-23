@@ -19,13 +19,24 @@ class Store {
   allTokens: any = [
     "7e938c7250620a6fa561a93e733224a3",
     "6c9ef0a46a96b4ae5021a44d1feaee6e",
+    "958b3ee79e1b5cac40b80a71a1bf463b",
   ];
 
   allStationsData = [{}];
   allStationsDataLoaded = false;
   removeStarTrack = false;
 
-  shuffle = false;
+  options = JSON.parse(
+    localStorage.getItem("options") || '{"shuffle":2,"favChannels":1}'
+  );
+  countPlayingTracks = 0;
+  minMax = [
+    [0, 0],
+    [7, 11],
+    [2, 6],
+    [1, 1],
+  ];
+
   bigPlayer = true;
   allFavChannelsView = true;
   allChannelsView = false;
@@ -51,11 +62,6 @@ class Store {
     currentSite: 0,
     channels_id: JSON.parse(localStorage.getItem("favoriteChannels") || "[]"),
   };
-
-  // fav2: any =
-  //   JSON.parse(localStorage.getItem("favoriteChannels2") || "[]") || [];
-
-  // otherSite = false;
 
   onAir = false;
   switchChannel = false;
@@ -218,9 +224,14 @@ class Store {
     this.allFavChannelsView = false;
   }
 
-  // setOtherSite(site: boolean) {
-  //   this.otherSite = site;
-  // }
+  setOptions(shuffle: number) {
+    this.options.shuffle = shuffle;
+    localStorage.setItem("options", JSON.stringify(this.options));
+  }
+
+  setCountPlayingTracks(count: number) {
+    this.countPlayingTracks = count;
+  }
 
   setSearchView(view: boolean) {
     this.searchView = view;

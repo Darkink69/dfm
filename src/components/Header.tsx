@@ -43,6 +43,7 @@ const Header = observer(() => {
                 store.setSwitchChannel(store.switchChannel ? false : true);
                 store.setAllFavChannelsView(false);
                 store.setSearchView(false);
+                store.setMenuView(false);
               }}
               className="text-white text-xl sm:text-2xl font-bold cursor-pointer"
             >
@@ -68,6 +69,7 @@ const Header = observer(() => {
                 store.setAllFavChannelsView(false);
                 store.setAllChannelsView(false);
                 store.setAllTracksOfflineView(false);
+                store.setMenuView(false);
               }}
               title="Найти канал"
             >

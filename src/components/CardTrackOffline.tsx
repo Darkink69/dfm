@@ -75,7 +75,7 @@ const CardTrackOffline = observer(({ data }: any) => {
           </div>
 
           <div
-            onClick={() => setViewItem(viewItem ? false : true)}
+            onClick={() => setViewItem(!viewItem)}
             className="m-2 ml-6 w-2 cursor-pointer"
           >
             <svg width="3" height="18" viewBox="0 0 4 24" fill="none">
@@ -94,7 +94,7 @@ const CardTrackOffline = observer(({ data }: any) => {
             </svg>
           </div>
           <div
-            onClick={() => setViewItem(viewItem ? false : true)}
+            onClick={() => setViewItem(!viewItem)}
             className="absolute opacity-80"
           >
             {viewItem ? (

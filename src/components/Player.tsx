@@ -134,7 +134,7 @@ const Player = observer(() => {
         i++
       ) {
         if (store.favoriteChannels.channels_id[i] === store.channel_id) {
-          console.log(store.channel_id);
+          // console.log(store.channel_id);
           if (i >= len - 1) {
             nextChannel = store.favoriteChannels.channels_id[0];
           } else {
@@ -156,6 +156,15 @@ const Player = observer(() => {
         }
       });
     }
+  };
+
+  const setCountPlay = () => {
+    const min = store.minMax[store.options.shuffle - 1][0];
+    const max = store.minMax[store.options.shuffle - 1][1];
+    const rand = min + Math.random() * (max + 1 - min);
+    store.setCountPlayingTracks(Math.floor(rand));
+
+    console.log(store.countPlayingTracks, "- треков будет играть");
   };
 
   const getOnAirTrack = () => {
@@ -276,6 +285,23 @@ const Player = observer(() => {
     // setAllStationIds(allIds);
     // store.setAllStationIds(allIds);
   }, [dataChannels]);
+
+  useEffect(() => {
+    setCountPlay();
+    // const minMax = [
+    //   [0, 0],
+    //   [7, 10],
+    //   [3, 5],
+    //   [1, 1],
+    // ];
+
+    // let min = minMax[store.options.shuffle - 1][0];
+    // let max = minMax[store.options.shuffle - 1][1];
+    // let rand = min + Math.random() * (max + 1 - min);
+    // store.setCountPlayingTracks(Math.floor(rand));
+
+    // console.log(store.countPlayingTracks, "- мы задали треков играть");
+  }, [store.options.shuffle]);
 
   useEffect(() => {
     getAllTokens();
@@ -405,7 +431,18 @@ const Player = observer(() => {
             }}
             onEnded={() => {
               store.setSpinView("");
-              getNextTrack();
+              if (store.options.shuffle === 1) {
+                getNextTrack();
+              } else {
+                store.setCountPlayingTracks((store.countPlayingTracks -= 1));
+                if (store.countPlayingTracks === 0) {
+                  setSpecialNextChannel();
+                  setCountPlay();
+                }
+                getNextTrack();
+                console.log("осталось", store.countPlayingTracks);
+              }
+
               console.log("END!!");
             }}
             // onSeeking={() => console.log("onSeeking")}
@@ -464,7 +501,7 @@ const Player = observer(() => {
           <svg width="19" height="24" viewBox="0 0 19 24" fill="none">
             <path
               d="M0 4.01911V20.1411C0 21.7626 1.82816 22.7101 3.15303 21.7753L14.1839 13.9923C15.2906 13.2114 15.3174 11.5795 14.2369 10.7627L3.20609 2.4237C1.88859 1.42771 0 2.36751 0 4.01911Z"
-              fill="#ffff"
+              fill={store.options.shuffle === 1 ? "#ffff" : "#C1272D"}
             />
             <rect
               x="15.1582"
@@ -472,7 +509,7 @@ const Player = observer(() => {
               width="3.78947"
               height="18.9474"
               rx="1.89474"
-              fill="#ffff"
+              fill={store.options.shuffle === 1 ? "#ffff" : "#C1272D"}
             />
           </svg>
         </div>
@@ -581,7 +618,10 @@ const Player = observer(() => {
         <div className="fixed bottom-0 bg-black z-20 h-[80px] w-full p-2 animate-down">
           <div className="flex cursor-pointer">
             <img
-              onClick={() => store.setSizePlayer(true)}
+              onClick={() => {
+                store.setSizePlayer(true);
+                store.setMenuView(false);
+              }}
               className="h-[60px]"
               src={
                 store.currentPlaying.asset_url === "https:null"
@@ -591,7 +631,10 @@ const Player = observer(() => {
               alt=""
             />
             <div
-              onClick={() => store.setSizePlayer(true)}
+              onClick={() => {
+                store.setSizePlayer(true);
+                store.setMenuView(false);
+              }}
               className="pl-4 w-1/2"
             >
               <p className="text-sky-400 text-sm font-bold">
@@ -662,7 +705,7 @@ const Player = observer(() => {
               <svg width="19" height="24" viewBox="0 0 19 24" fill="none">
                 <path
                   d="M0 4.01911V20.1411C0 21.7626 1.82816 22.7101 3.15303 21.7753L14.1839 13.9923C15.2906 13.2114 15.3174 11.5795 14.2369 10.7627L3.20609 2.4237C1.88859 1.42771 0 2.36751 0 4.01911Z"
-                  fill="#ffff"
+                  fill={store.options.shuffle === 1 ? "#ffff" : "#C1272D"}
                 />
                 <rect
                   x="15.1582"
@@ -670,7 +713,7 @@ const Player = observer(() => {
                   width="3.78947"
                   height="18.9474"
                   rx="1.89474"
-                  fill="#ffff"
+                  fill={store.options.shuffle === 1 ? "#ffff" : "#C1272D"}
                 />
               </svg>
             </div>
