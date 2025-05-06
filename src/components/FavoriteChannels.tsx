@@ -79,16 +79,6 @@ const FavoriteChannels = observer(() => {
   }, [store.allFavChannelsView]);
 
   useEffect(() => {
-    // const sites: any[] = [];
-    // store.fav2.map((item: any) => {
-    //   sites.push(store.sites[item.currentSite]);
-    // });
-    // // console.log(sites);
-    // const newSet = new Set(sites);
-    // const uniqueSites = Array.from(newSet);
-    // store.setFavNamesSites(uniqueSites);
-    // getAllChannels2(uniqueSites);
-    // getAllChannels2();
     if (store.favoriteChannels.channels_id.length === 0) {
       console.log(store.favoriteChannels.channels_id.length, "!!local fav!!");
       [69, 143, 186, 79].map((item: number) => {
@@ -104,13 +94,12 @@ const FavoriteChannels = observer(() => {
       <div
         className="pt-20 pl-4 pr-4 pb-2"
         onClick={() => {
-          if (!store.allFavChannelsView) {
+          if (store.allFavChannelsView) {
             getAllChannels();
           }
           // store.setSpinView("");
-          store.setAllFavChannelsView(store.allFavChannelsView ? false : true);
+          store.setAllFavChannelsView(!store.allFavChannelsView);
         }}
-        // title="Здесь находятся все ваши любимые каналы"
       >
         <div className="flex items-center bg-slate-800">
           <svg width="25" height="23" viewBox="0 0 25 23" fill="none">

@@ -17,9 +17,116 @@ const Player = observer(() => {
   const [currentTimePlay, setCurrentTimePlay] = useState(Number);
   const [isPlaying, setIsPlaying] = useState(false);
   // const [isLoaded, setIsLoaded] = useState(false);
+  const [allChannelTracks, setAllChannelTracks] = useState<any>([]);
+  const [idChannelForNext, setIdChannelForNext] = useState(Number);
+
+  const [isSwiping, setIsSwiping] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [startY, setStartY] = useState(0);
+  const [translateX, setTranslateX] = useState(0);
+  const [translateY, setTranslateY] = useState(0);
+  const [isCopied, setIsCopied] = useState(false);
+  const textRef = useRef<HTMLParagraphElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
 
   const audioRef = useRef<any>(null);
   const svgRef = useRef<any>(null);
+
+  const copyToClipboard = () => {
+    if (textRef.current) {
+      const textToCopy = textRef.current.textContent || "";
+
+      // Используем современный Clipboard API
+      navigator.clipboard
+        .writeText(textToCopy)
+        .then(() => {
+          setIsCopied(true);
+          setTimeout(() => setIsCopied(false), 2000); // Сброс статуса через 2 секунды
+        })
+        .catch((err) => {
+          console.error("Ошибка при копировании: ", err);
+          // Fallback для старых браузеров
+          const textArea = document.createElement("textarea");
+          textArea.value = textToCopy;
+          document.body.appendChild(textArea);
+          textArea.select();
+          document.execCommand("copy");
+          document.body.removeChild(textArea);
+          setIsCopied(true);
+          setTimeout(() => setIsCopied(false), 2000);
+        });
+    }
+  };
+
+  const handleTouchStart = (e: React.TouchEvent | React.MouseEvent) => {
+    setIsSwiping(true);
+    const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+    const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
+    setStartX(clientX);
+    setStartY(clientY);
+    setTranslateX(0);
+    setTranslateY(0);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent | React.MouseEvent) => {
+    if (!isSwiping) return;
+
+    const currentX = "touches" in e ? e.touches[0].clientX : e.clientX;
+    const currentY = "touches" in e ? e.touches[0].clientY : e.clientY;
+    const diffX = currentX - startX;
+    const diffY = currentY - startY;
+
+    // Определяем основное направление свайпа
+    if (Math.abs(diffX) > Math.abs(diffY)) {
+      // Горизонтальный свайп
+      setTranslateX(diffX);
+      setTranslateY(0);
+    } else {
+      // Вертикальный свайп (только вниз)
+      if (diffY > 0) {
+        setTranslateY(diffY);
+        setTranslateX(0);
+      }
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (!isSwiping) return;
+    setIsSwiping(false);
+
+    const swipeThreshold = 100;
+
+    if (translateX > swipeThreshold) {
+      handleSwipeRight();
+    } else if (translateX < -swipeThreshold) {
+      handleSwipeLeft();
+    } else if (translateY > swipeThreshold) {
+      handleSwipeDown();
+    }
+
+    // Анимация возврата
+    setTranslateX(0);
+    setTranslateY(0);
+  };
+
+  const handleSwipeRight = () => {
+    console.log("Свайп вправо");
+  };
+
+  const handleSwipeLeft = () => {
+    setTranslateX(0);
+    setTranslateY(0);
+    getRandomTrack();
+  };
+
+  const handleSwipeDown = () => {
+    store.setSizePlayer(false);
+  };
+
+  // const handleSwipeComplete = () => {
+  //   console.log("Свайп вправо выполнен!");
+  //   getRandomTrack();
+  // };
 
   const getAllTokens = () => {
     fetch(
@@ -193,6 +300,52 @@ const Player = observer(() => {
     }
   };
 
+  const getAllChannelTracks = () => {
+    fetch(
+      `https://qh8bsvaksadb2kj9.public.blob.vercel-storage.com/${
+        store.sites[store.currentSite]
+      }/db_${store.sites[store.currentSite]}_full_${
+        store.channel_id
+      }_light.json`
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        {
+          setAllChannelTracks(data.sort(() => Math.random() - 0.5));
+          setIdChannelForNext(store.channel_id);
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const getRandomTrack = () => {
+    store.setSpinView("");
+    store.setOnAir(false);
+    console.log(idChannelForNext, "next!");
+    if (
+      allChannelTracks.length === 0 ||
+      idChannelForNext !== store.channel_id
+    ) {
+      getAllChannelTracks();
+    }
+
+    console.log(store.channel_id);
+    console.log(allChannelTracks);
+    const audio_token = String(localStorage.getItem("data")).slice(1, -1);
+
+    const rndTrack = Math.floor(Math.random() * allChannelTracks.length);
+    // console.log(rndTrack);
+
+    store.setCurrentPlaying({
+      track: allChannelTracks[rndTrack].track,
+      url: `https:${allChannelTracks[rndTrack].url}?${audio_token}`,
+      asset_url: allChannelTracks[rndTrack].asset_url,
+    });
+    // console.log("random!!");
+  };
+
   const addPlaylist = () => {
     const allStarTracks = JSON.parse(localStorage.getItem("stars") || "[]");
 
@@ -223,6 +376,10 @@ const Player = observer(() => {
   // useEffect(() => {
   //   audioRef.current?.setJumpTime(currentTimePlay);
   // }, [currentTimePlay]);
+
+  // useEffect(() => {
+  //   getAllChannelTracks();
+  // }, [allChannelTracks]);
 
   useEffect(() => {
     getTracks();
@@ -288,12 +445,6 @@ const Player = observer(() => {
 
   useEffect(() => {
     setCountPlay();
-    // const minMax = [
-    //   [0, 0],
-    //   [7, 10],
-    //   [3, 5],
-    //   [1, 1],
-    // ];
 
     // let min = minMax[store.options.shuffle - 1][0];
     // let max = minMax[store.options.shuffle - 1][1];
@@ -521,7 +672,7 @@ const Player = observer(() => {
             <div className="p-4 sm:flex block">
               {store.favoriteChannels.channels_id.includes(store.channel_id) ? (
                 <div
-                  className="absolute top-10 right-10 cursor-pointer"
+                  className="z-30 absolute top-10 right-10 cursor-pointer"
                   onClick={() => {
                     store.setfavoriteChannels(store.channel_id);
                     // store.setfavoriteChannels({
@@ -539,7 +690,7 @@ const Player = observer(() => {
                 </div>
               ) : (
                 <div
-                  className="absolute top-10 right-10 cursor-pointer"
+                  className="z-30 absolute top-10 right-10 cursor-pointer"
                   onClick={() => {
                     store.setfavoriteChannels(store.channel_id);
                   }}
@@ -558,7 +709,7 @@ const Player = observer(() => {
 
               <div className="w-full sm:w-[300px]">
                 <div
-                  className="absolute top-[60%] right-20 cursor-pointer opacity-50 hover:opacity-100"
+                  className="z-30 absolute top-[60%] right-20 cursor-pointer opacity-50 hover:opacity-100"
                   onClick={() => addPlaylist()}
                   title="Добавить в избранные треки"
                 >
@@ -572,7 +723,7 @@ const Player = observer(() => {
                   </svg>
                 </div>
                 <div
-                  className="absolute top-[60.5%] right-10 cursor-pointer opacity-50 hover:opacity-100"
+                  className="z-30 absolute top-[60.5%] right-10 cursor-pointer opacity-50 hover:opacity-100"
                   onClick={() => downloadTrack()}
                   title="Скачать трек"
                 >
@@ -588,7 +739,26 @@ const Player = observer(() => {
                   </svg>
                 </div>
 
+                <div
+                  className="z-30 absolute top-[35%] right-10 cursor-pointer opacity-50 hover:opacity-100"
+                  onClick={() => getRandomTrack()}
+                  title="Следующий случайный трек"
+                >
+                  <svg width="26" height="19" viewBox="0 0 26 19" fill="none">
+                    <path
+                      d="M0 4.01912V15.1411C0 16.7626 1.82816 17.7101 3.15303 16.7753L10.7628 11.4061C11.8695 10.6252 11.8963 8.99325 10.8159 8.17647L3.20609 2.4237C1.88859 1.42771 0 2.36751 0 4.01912Z"
+                      fill="#FCFCFC"
+                    />
+                    <path
+                      d="M13 4.01912V15.1411C13 16.7626 14.8282 17.7101 16.153 16.7753L23.7628 11.4061C24.8695 10.6252 24.8963 8.99325 23.8159 8.17647L16.2061 2.4237C14.8886 1.42771 13 2.36751 13 4.01912Z"
+                      fill="#FCFCFC"
+                    />
+                  </svg>
+                </div>
+
                 <img
+                  ref={imageRef}
+                  className="cursor-grab active:cursor-grabbing transition-transform duration-300"
                   onClick={() => store.setSizePlayer(false)}
                   // src={"https:" + currentTrack?.asset_url}
                   src={
@@ -597,6 +767,17 @@ const Player = observer(() => {
                       : store.currentPlaying.asset_url
                   }
                   alt=""
+                  style={{
+                    transform: `translate(${translateX}px, ${translateY}px)`,
+                    userSelect: "none",
+                  }}
+                  onTouchStart={handleTouchStart}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
+                  onMouseDown={handleTouchStart}
+                  onMouseMove={handleTouchMove}
+                  onMouseUp={handleTouchEnd}
+                  onMouseLeave={handleTouchEnd}
                 />
               </div>
 
@@ -607,9 +788,38 @@ const Player = observer(() => {
                 >
                   {store.channel_name}
                 </p>
-                <p className="text-white sm:text-2xl">
+                <p
+                  ref={textRef}
+                  className="text-white sm:text-2xl cursor-pointer"
+                  onClick={() => copyToClipboard()}
+                >
                   {store.currentPlaying.track}
                 </p>
+                {/* {isCopied && (
+                  <div className="mt-2 text-teal-600 text-base">
+                    Артист и название трека скопированы!
+                  </div>
+                )} */}
+                {isCopied && (
+                  <div className="fixed bottom-40 right-4 z-50">
+                    <div className="bg-black bg-opacity-70 text-white px-4 py-3 rounded-lg shadow-lg flex items-center">
+                      <svg
+                        className="w-5 h-5 mr-2 text-teal-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={3}
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                      <span>Артист и название трека скопированы!</span>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

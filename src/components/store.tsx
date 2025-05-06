@@ -16,9 +16,12 @@ class Store {
     JSON.parse(localStorage.getItem("channel_id") || "69") || 69;
   channel_name = localStorage.getItem("channel_name") || "Classic EuroDance";
   onlyChannelIds: any = [];
+
+  premium = "615841863e5533f627fa26bd6e921776";
+  // allTokens: any = [this.premium];
   allTokens: any = [
     "7e938c7250620a6fa561a93e733224a3",
-    "6c9ef0a46a96b4ae5021a44d1feaee6e",
+    "9c6018c2679a51df92a51feab8f169e4",
     "958b3ee79e1b5cac40b80a71a1bf463b",
   ];
 
@@ -157,51 +160,6 @@ class Store {
     this.removeStarTrack = remove;
   }
 
-  // setfavoriteChannels2(id: any) {
-  //   console.log(this.onlyChannelIds);
-  //   console.log(id.channel_id, "IDD!!!!");
-  //   if (this.onlyChannelIds.includes(id.channel_id)) {
-  //     for (let i = 0, len = this.onlyChannelIds.length; i < len; i++) {
-  //       if (this.onlyChannelIds[i] === id.channel_id) {
-  //         console.log(this.onlyChannelIds[i], id.channel_id, "ifff");
-  //         this.onlyChannelIds.splice(i, 1);
-  //         // console.log(this.onlyChannelIds[i]);
-  //         // let items = [{id: 1}, {id: 2}, {id: 3}];
-  //         // До свидания, объекты с id: 2 👋
-  //         // items = items.filter(item => item.id !== 2);
-  //         this.fav2 = this.fav2.filter(
-  //           (item: { channel_id: any }) =>
-  //             item.channel_id !== this.onlyChannelIds[i]
-  //         );
-  //         // localStorage.setItem("favoriteChannels2", JSON.stringify(this.fav2));
-  //         break;
-  //       }
-  //     }
-  //   } else {
-  //     // this.favoriteChannels.channels_id.push(id);
-  //     console.log(id, "push");
-  //     this.fav2.push(id);
-  //     // localStorage.setItem("favoriteChannels2", JSON.stringify(this.fav2));
-  //     this.fav2.map((item: any) => {
-  //       this.onlyChannelIds.push(item.channel_id);
-  //     });
-  //   }
-  //   // localStorage.setItem(
-  //   //   "favoriteChannels",
-  //   //   JSON.stringify(this.favoriteChannels.channels_id)
-  //   // );
-  //   this.allFavChannelsView = false;
-  //   localStorage.setItem("favoriteChannels2", JSON.stringify(this.fav2));
-  // }
-
-  // setfavoriteChannelsAdd(x: any) {
-  //   this.fav2.push(x);
-  //   // localStorage.setItem("favoriteChannels2", JSON.stringify(this.fav2));
-  //   this.fav2.map((item: any) => {
-  //     this.onlyChannelIds.push(item.channel_id);
-  //   });
-  //   // console.log(this.fav2, "setfavoriteChannels2!!");
-  // }
   setfavoriteChannels(id: number) {
     if (this.favoriteChannels.channels_id.includes(id)) {
       for (

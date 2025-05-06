@@ -48,6 +48,12 @@ const AllTracksOffline = observer(() => {
     setDataSearch(resultSearch);
   };
 
+  const onEnter = (e: any) => {
+    if (e.key === "Enter") {
+      e.target.blur();
+    }
+  };
+
   useEffect(() => {
     setShowOfflineTracks(allChannelTracks?.slice(0, showTracks));
   }, [allChannelTracks, showTracks]);
@@ -151,6 +157,7 @@ const AllTracksOffline = observer(() => {
                 <input
                   ref={inputRef}
                   onChange={(event) => setInput(event.target.value)}
+                  onKeyUp={onEnter}
                   type="text"
                   placeholder={"Поиск на " + store.channel_name}
                   className="block text-base bg-slate-700 border-2 border-gray-400 w-full pl-10 py-2 px-3 ring-1 ring-slate-900/10 text-white rounded-full dark:bg-slate-800 dark:ring-0 dark:highlight-white/5 dark:text-slate-400"
