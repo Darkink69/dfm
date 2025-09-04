@@ -19,12 +19,14 @@ class Store {
 
   premium = "615841863e5533f627fa26bd6e921776";
   // allTokens: any = [this.premium];
+  // allTokens: any = [0];
   allTokens: any = [
     "7e938c7250620a6fa561a93e733224a3",
     "9c6018c2679a51df92a51feab8f169e4",
     "958b3ee79e1b5cac40b80a71a1bf463b",
   ];
 
+  dataChannels = [];
   allStationsData = [{}];
   allStationsDataLoaded = false;
   removeStarTrack = false;
@@ -47,6 +49,7 @@ class Store {
   allStarTracksView = false;
   searchView = false;
   menuView = false;
+  historyView = false;
   serverError = false;
 
   spinView = "";
@@ -197,6 +200,10 @@ class Store {
 
   setMenuView(view: boolean) {
     this.menuView = view;
+  }
+
+  setHistoryView(view: boolean) {
+    this.historyView = view;
   }
 
   setServerError(err: boolean) {

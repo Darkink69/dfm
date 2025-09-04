@@ -52,6 +52,7 @@ const CardTrackOffline = observer(({ data }: any) => {
                 asset_url: data.asset_url,
               });
               store.setOnAir(false);
+              store.setHistoryView(false);
             }}
           >
             <img

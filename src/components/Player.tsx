@@ -9,7 +9,7 @@ import OffAir from "./offAir";
 const Player = observer(() => {
   const [dataTrack, setDataTrack] = useState([]);
   const [dataHistory, setDataHistory] = useState([]);
-  const [dataChannels, setDataChannels] = useState<any>({});
+  // const [dataChannels, setDataChannels] = useState<any>({});
   // const [allStationIds, setAllStationIds] = useState<any[]>([]);
   const [currentTrack, setCurrentTrack] = useState<any>();
   // const [allTokens, setAllTokens] = useState<any>();
@@ -26,17 +26,61 @@ const Player = observer(() => {
   const [translateX, setTranslateX] = useState(0);
   const [translateY, setTranslateY] = useState(0);
   const [isCopied, setIsCopied] = useState(false);
+
+  interface DataTrack {
+    asset_url: string;
+    id: number;
+    length: number;
+    size?: null;
+    track: string;
+    ts: number;
+    url: string;
+  }
+
+  const [historyData, setHistoryData] = useState<DataTrack[]>([]);
+  // const [historyData, setHistoryData] = useState<any>(
+  //   localStorage.getItem("historyData") || [{}]
+  // );
+
   const textRef = useRef<HTMLParagraphElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
-
   const audioRef = useRef<any>(null);
   const svgRef = useRef<any>(null);
+
+  const setHistoryPlayingTrack = () => {
+    const data = localStorage.getItem("historyData");
+    if (data) {
+      try {
+        const parsedItems: DataTrack[] = JSON.parse(data);
+        setHistoryData(parsedItems);
+      } catch (error) {
+        // console.error("Ошибка парсинга данных из localStorage", error);
+      }
+    }
+
+    Object.values(dataHistory).map((item: any) => {
+      if (item.channel_id === store.channel_id) {
+        const nowData: DataTrack = {
+          asset_url: item.art_url,
+          id: item.track_id,
+          length: item.length,
+          size: null,
+          track: item.track,
+          url: store.currentPlaying.url.split("?")[0].split("https:")[1],
+          ts: Date.now(),
+        };
+        setHistoryData((prev: any) => [nowData, ...prev]);
+        localStorage.setItem("historyData", JSON.stringify(historyData));
+      }
+    });
+
+    // console.log(nowData);
+  };
 
   const copyToClipboard = () => {
     if (textRef.current) {
       const textToCopy = textRef.current.textContent || "";
 
-      // Используем современный Clipboard API
       navigator.clipboard
         .writeText(textToCopy)
         .then(() => {
@@ -128,17 +172,17 @@ const Player = observer(() => {
   //   getRandomTrack();
   // };
 
-  const getAllTokens = () => {
-    fetch(
-      `https://qh8bsvaksadb2kj9.public.blob.vercel-storage.com/audio/audio.json`
-    )
-      .then((response) => response.json())
-      .then((data) => store.setAllTokens(data))
-      .catch((error) => {
-        console.error(error);
-        console.log("Audio_token problem");
-      });
-  };
+  // const getAllTokens = () => {
+  //   fetch(
+  //     `https://qh8bsvaksadb2kj9.public.blob.vercel-storage.com/audio/audio.json`
+  //   )
+  //     .then((response) => response.json())
+  //     .then((data) => store.setAllTokens(data))
+  //     .catch((error) => {
+  //       console.error(error);
+  //       console.log("Audio_token problem");
+  //     });
+  // };
 
   const getTracks = () => {
     const audio_token =
@@ -177,36 +221,36 @@ const Player = observer(() => {
       });
   };
 
-  const getChannels = () => {
-    // собираем инфо о всех каналах (?)
-    const infoCh: any = [];
-    store.sites.map((item: any) => {
-      // console.log(item);
-      fetch(`https://api.audioaddict.com/v1/${item}/channels.json`)
-        .then((response) => response.json())
-        .then((data) => {
-          Object.values(data).map((i: any) => {
-            let ch = {
-              id: i.id,
-              network_id: i.network_id,
-              name: i.name,
-              description_short: i.description_short,
-            };
-            // console.log(infoCh);
-            infoCh.push(ch);
-            setDataChannels((prev: any) => ({ ...prev, infoCh }));
-          });
-        })
-        .catch((error) => console.error(error));
-    });
-  };
+  // const getChannels = () => {
+  //   // собираем инфо о всех каналах (?)
+  //   const infoCh: any = [];
+  //   store.sites.map((item: any) => {
+  //     // console.log(item);
+  //     fetch(`https://api.audioaddict.com/v1/${item}/channels.json`)
+  //       .then((response) => response.json())
+  //       .then((data) => {
+  //         Object.values(data).map((i: any) => {
+  //           let ch = {
+  //             id: i.id,
+  //             network_id: i.network_id,
+  //             name: i.name,
+  //             description_short: i.description_short,
+  //           };
+  //           // console.log(infoCh);
+  //           infoCh.push(ch);
+  //           setDataChannels((prev: any) => ({ ...prev, infoCh }));
+  //         });
+  //       })
+  //       .catch((error) => console.error(error));
+  //   });
+  // };
 
-  const setAudioToken = () => {
-    localStorage.setItem(
-      "data",
-      JSON.stringify(currentTrack?.content.assets[0].url.split("?")[1] || [])
-    );
-  };
+  // const setAudioToken = () => {
+  //   localStorage.setItem(
+  //     "data",
+  //     JSON.stringify(currentTrack?.content.assets[0].url.split("?")[1] || [])
+  //   );
+  // };
 
   const getNextTrack = () => {
     getHistory();
@@ -323,7 +367,7 @@ const Player = observer(() => {
   const getRandomTrack = () => {
     store.setSpinView("");
     store.setOnAir(false);
-    console.log(idChannelForNext, "next!");
+    // console.log(idChannelForNext, "next!");
     if (
       allChannelTracks.length === 0 ||
       idChannelForNext !== store.channel_id
@@ -331,8 +375,8 @@ const Player = observer(() => {
       getAllChannelTracks();
     }
 
-    console.log(store.channel_id);
-    console.log(allChannelTracks);
+    // console.log(store.channel_id);
+    // console.log(allChannelTracks);
     const audio_token = String(localStorage.getItem("data")).slice(1, -1);
 
     const rndTrack = Math.floor(Math.random() * allChannelTracks.length);
@@ -400,7 +444,7 @@ const Player = observer(() => {
         });
       }
     });
-    setAudioToken();
+    // setAudioToken();
     // audioRef.current?.setJumpTime(300);
     // audioRef.current?.setJumpTime(currentTimePlay);
   }, [dataTrack]);
@@ -420,48 +464,41 @@ const Player = observer(() => {
     // audioRef.current?.setJumpTime(currentTimePlay);
   }, [dataHistory]);
 
-  useEffect(() => {
-    // console.log(typeof dataChannels, dataChannels, "eff!");
-    if (Object.keys(dataChannels).length !== 0) {
-      // console.log(dataChannels.length);
+  // useEffect(() => {
+  //   // console.log(typeof dataChannels, dataChannels, "eff!");
+  //   if (Object.keys(dataChannels).length !== 0) {
+  //     // console.log(dataChannels.length);
 
-      localStorage.setItem("ch", JSON.stringify(dataChannels.infoCh));
-      store.setAllStationsDataLoaded(true);
-    }
+  //     localStorage.setItem("ch", JSON.stringify(dataChannels.infoCh));
+  //     store.setAllStationsDataLoaded(true);
+  //   }
 
-    const allNames: { id: number; name: string }[] = [];
-    // const allIds: { id: number }[] = [];
-    // ВСЕ ИМЕНА КАНАЛОВ!! ТУТ УСТАНАВЛИВАЕТ ПРАВИЛЬНО!
-    dataChannels.data?.map((item: any) => {
-      allNames.push({ id: item.id, name: item.name });
-      // console.log(item.id, item.name);
-      // allIds.push(item.id);
-    });
-    // console.log(typeof allIds, allIds);
-    store.setAllStationsNames(allNames);
-    // setAllStationIds(allIds);
-    // store.setAllStationIds(allIds);
-  }, [dataChannels]);
+  //   const allNames: { id: number; name: string }[] = [];
+  //   // const allIds: { id: number }[] = [];
+  //   // ВСЕ ИМЕНА КАНАЛОВ!! ТУТ УСТАНАВЛИВАЕТ ПРАВИЛЬНО!
+  //   dataChannels.data?.map((item: any) => {
+  //     allNames.push({ id: item.id, name: item.name });
+  //     // console.log(item.id, item.name);
+  //     // allIds.push(item.id);
+  //   });
+  //   // console.log(typeof allIds, allIds);
+  //   store.setAllStationsNames(allNames);
+  //   // setAllStationIds(allIds);
+  //   // store.setAllStationIds(allIds);
+  // }, [dataChannels]);
 
   useEffect(() => {
     setCountPlay();
-
-    // let min = minMax[store.options.shuffle - 1][0];
-    // let max = minMax[store.options.shuffle - 1][1];
-    // let rand = min + Math.random() * (max + 1 - min);
-    // store.setCountPlayingTracks(Math.floor(rand));
-
-    // console.log(store.countPlayingTracks, "- мы задали треков играть");
   }, [store.options.shuffle]);
 
   useEffect(() => {
-    getAllTokens();
-    const channelNames = JSON.parse(localStorage.getItem("ch") || "0");
-    if (channelNames === 0) {
-      getChannels();
-    } else {
-      store.setAllStationsDataLoaded(true);
-    }
+    // getAllTokens();
+    // const channelNames = JSON.parse(localStorage.getItem("ch") || "0");
+    // if (channelNames === 0) {
+    //   getChannels();
+    // } else {
+    //   store.setAllStationsDataLoaded(true);
+    // }
 
     const os = navigator.userAgent;
     // if (os.includes("Android")) {
@@ -572,7 +609,7 @@ const Player = observer(() => {
               {
                 setIsPlaying(true);
                 document.title = `${store.currentPlaying.track}`;
-                // store.setAllFavChannelsView(true);
+                setHistoryPlayingTrack();
               }
             }}
             onPause={() => {
@@ -831,6 +868,7 @@ const Player = observer(() => {
               onClick={() => {
                 store.setSizePlayer(true);
                 store.setMenuView(false);
+                store.setHistoryView(false);
               }}
               className="h-[60px]"
               src={

@@ -2,16 +2,11 @@ import store from "./store";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import CardChannel from "./CardChannel";
-// import CardChannelFav from "./CardChannelFavorite";
 
 const FavoriteChannels = observer(() => {
   const [allChannels, setAllChannels] = useState<any>({});
-  // const [allChannels2, setAllChannels2] = useState<any>({});
   const [allFavChannels, setAllFavChannels] = useState<any>({});
-  // const [allFavChannels2, setAllFavChannels2] = useState<any>({});
   const [isLoaded, setIsLoaded] = useState(false);
-  // const timeFollowFav = useRef<any>();
-  // const [isLoaded2, setIsLoaded2] = useState(false);
 
   const getAllChannels = () => {
     const sites: any[] = [];
@@ -46,7 +41,6 @@ const FavoriteChannels = observer(() => {
             setAllChannels((prev: any) => ({ ...prev, resultCh }));
             setIsLoaded(true);
           });
-          // setAllChannels2(data);
         })
         .catch((error) => console.error(error));
     });
@@ -65,12 +59,10 @@ const FavoriteChannels = observer(() => {
     setIsLoaded(true);
   }, [allChannels, store.favoriteChannels.channels_id]);
 
+  // Обновляем состояние во вкладке Любимые раз в 120 сек
   useEffect(() => {
-    // console.log("use!");
     const timeOutId = setInterval(() => {
-      // store.setSpinView("");
       if (store.allFavChannelsView) {
-        // console.log("out!");
         getAllChannels();
       } else {
       }
@@ -80,7 +72,6 @@ const FavoriteChannels = observer(() => {
 
   useEffect(() => {
     if (store.favoriteChannels.channels_id.length === 0) {
-      console.log(store.favoriteChannels.channels_id.length, "!!local fav!!");
       [69, 143, 186, 79].map((item: number) => {
         store.setfavoriteChannels(item);
       });
@@ -94,10 +85,9 @@ const FavoriteChannels = observer(() => {
       <div
         className="pt-20 pl-4 pr-4 pb-2"
         onClick={() => {
-          if (store.allFavChannelsView) {
+          if (!store.allFavChannelsView) {
             getAllChannels();
           }
-          // store.setSpinView("");
           store.setAllFavChannelsView(!store.allFavChannelsView);
         }}
       >
