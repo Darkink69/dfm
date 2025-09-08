@@ -76,12 +76,12 @@ const History = observer(() => {
 
           <div className="pt-16 pl-4 grid grid-cols-1 scroll-auto">
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 text-left grid-cols-1">
-              {historyData?.map((item: any) => {
+              {historyData?.map((item: any, index: any) => {
                 return [
                   <div className="pt-4 pl-1 text-white text-sm">
                     {formatTimestamp(item.ts)}
                   </div>,
-                  <CardTrackOffline data={item} key={item.id} />,
+                  <CardTrackOffline data={item} key={index} />,
                 ];
               })}
             </div>
