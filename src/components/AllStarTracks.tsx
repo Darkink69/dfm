@@ -20,9 +20,7 @@ const AllStarTracks = observer(() => {
     <>
       <div
         className={
-          store.allTracksOfflineView
-            ? "pl-4 pr-4 mt-8 pb-28"
-            : "pl-4 pr-4 pb-28"
+          store.allTracksOfflineView ? "pl-4 pr-4 mt-8 pb-2" : "pl-4 pr-4 pb-3"
         }
       >
         <div
@@ -60,6 +58,13 @@ const AllStarTracks = observer(() => {
                     return <CardTrackStar data={item} key={item.id} />;
                   })
                 : ""}
+              {data.length === 0 ? (
+                <div className="text-white text-center text-sm pt-4 pb-2">
+                  Избранных треков пока нет
+                </div>
+              ) : (
+                ""
+              )}
             </div>
           ) : (
             ""

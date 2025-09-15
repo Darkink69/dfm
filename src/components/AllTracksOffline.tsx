@@ -89,7 +89,7 @@ const AllTracksOffline = observer(() => {
         }
       >
         <div
-          className="flex items-center pb-2 bg-slate-800"
+          className="flex items-center pb-3 bg-slate-800"
           onClick={() => {
             {
               !store.allTracksOfflineView ? store.setSpinView("") : "";

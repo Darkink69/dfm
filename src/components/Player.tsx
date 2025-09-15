@@ -11,14 +11,14 @@ const Player = observer(() => {
   const [dataHistory, setDataHistory] = useState([]);
   // const [dataChannels, setDataChannels] = useState<any>({});
   // const [allStationIds, setAllStationIds] = useState<any[]>([]);
-  const [currentTrack, setCurrentTrack] = useState<any>();
+  // const [currentTrack, setCurrentTrack] = useState<any>();
   // const [allTokens, setAllTokens] = useState<any>();
   const [currentTrackId, setCurrentTrackId] = useState(null);
   const [currentTimePlay, setCurrentTimePlay] = useState(Number);
   const [isPlaying, setIsPlaying] = useState(false);
   // const [isLoaded, setIsLoaded] = useState(false);
-  const [allChannelTracks, setAllChannelTracks] = useState<any>([]);
-  const [idChannelForNext, setIdChannelForNext] = useState(Number);
+  // const [allChannelTracks, setAllChannelTracks] = useState<any>([]);
+  // const [idChannelForNext, setIdChannelForNext] = useState(Number);
 
   const [isSwiping, setIsSwiping] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -26,6 +26,10 @@ const Player = observer(() => {
   const [translateX, setTranslateX] = useState(0);
   const [translateY, setTranslateY] = useState(0);
   const [isCopied, setIsCopied] = useState(false);
+  const [isFav, setIsFav] = useState(false);
+  const [isPlay, setIsPlay] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
+  const getTracksCalledRef = useRef(false);
 
   interface DataTrack {
     asset_url: string;
@@ -38,23 +42,22 @@ const Player = observer(() => {
   }
 
   const [historyData, setHistoryData] = useState<DataTrack[]>([]);
-  // const [historyData, setHistoryData] = useState<any>(
-  //   localStorage.getItem("historyData") || [{}]
-  // );
 
   const textRef = useRef<HTMLParagraphElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
   const audioRef = useRef<any>(null);
   const svgRef = useRef<any>(null);
 
+  // добавляем трек в историю прослушивания
   const setHistoryPlayingTrack = () => {
     const data = localStorage.getItem("historyData");
     if (data) {
       try {
-        const parsedItems: DataTrack[] = JSON.parse(data);
+        const parsedItems: DataTrack[] = JSON.parse(data) || [];
         setHistoryData(parsedItems);
       } catch (error) {
-        // console.error("Ошибка парсинга данных из localStorage", error);
+        setHistoryData([]);
+        console.error("Ошибка парсинга данных из localStorage", error);
       }
     }
 
@@ -73,10 +76,9 @@ const Player = observer(() => {
         localStorage.setItem("historyData", JSON.stringify(historyData));
       }
     });
-
-    // console.log(nowData);
   };
 
+  // копируем в буфер обмена название трека
   const copyToClipboard = () => {
     if (textRef.current) {
       const textToCopy = textRef.current.textContent || "";
@@ -102,6 +104,7 @@ const Player = observer(() => {
     }
   };
 
+  // обрабатываем свайпы
   const handleTouchStart = (e: React.TouchEvent | React.MouseEvent) => {
     setIsSwiping(true);
     const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
@@ -154,7 +157,9 @@ const Player = observer(() => {
   };
 
   const handleSwipeRight = () => {
-    console.log("Свайп вправо");
+    addPlaylist();
+    setIsPlay(true);
+    setTimeout(() => setIsPlay(false), 2000);
   };
 
   const handleSwipeLeft = () => {
@@ -168,23 +173,14 @@ const Player = observer(() => {
   };
 
   // const handleSwipeComplete = () => {
-  //   console.log("Свайп вправо выполнен!");
-  //   getRandomTrack();
+  //   console.log(
+  //     "Свайп вправо выполнен!"
+  //   );
   // };
 
-  // const getAllTokens = () => {
-  //   fetch(
-  //     `https://qh8bsvaksadb2kj9.public.blob.vercel-storage.com/audio/audio.json`
-  //   )
-  //     .then((response) => response.json())
-  //     .then((data) => store.setAllTokens(data))
-  //     .catch((error) => {
-  //       console.error(error);
-  //       console.log("Audio_token problem");
-  //     });
-  // };
-
+  // получаем текущие 5 треков с api audioaddict
   const getTracks = () => {
+    console.log("getTracks сработал");
     const audio_token =
       store.allTokens[Math.floor(Math.random() * store.allTokens.length)];
     const ts = Date.now();
@@ -205,6 +201,7 @@ const Player = observer(() => {
       });
   };
 
+  // получаем все текущие треки всех каналов сайта c официального api
   const getHistory = () => {
     fetch(
       `https://api.audioaddict.com/v1/${
@@ -212,7 +209,10 @@ const Player = observer(() => {
       }/track_history.json`
     )
       .then((response) => response.json())
-      .then((data) => setDataHistory(data))
+      .then((data) => {
+        setDataHistory(data);
+        setIsUpdate(true);
+      })
       .catch((error) => {
         console.error(error);
         console.log("api audioaddict problem..");
@@ -221,43 +221,12 @@ const Player = observer(() => {
       });
   };
 
-  // const getChannels = () => {
-  //   // собираем инфо о всех каналах (?)
-  //   const infoCh: any = [];
-  //   store.sites.map((item: any) => {
-  //     // console.log(item);
-  //     fetch(`https://api.audioaddict.com/v1/${item}/channels.json`)
-  //       .then((response) => response.json())
-  //       .then((data) => {
-  //         Object.values(data).map((i: any) => {
-  //           let ch = {
-  //             id: i.id,
-  //             network_id: i.network_id,
-  //             name: i.name,
-  //             description_short: i.description_short,
-  //           };
-  //           // console.log(infoCh);
-  //           infoCh.push(ch);
-  //           setDataChannels((prev: any) => ({ ...prev, infoCh }));
-  //         });
-  //       })
-  //       .catch((error) => console.error(error));
-  //   });
-  // };
-
-  // const setAudioToken = () => {
-  //   localStorage.setItem(
-  //     "data",
-  //     JSON.stringify(currentTrack?.content.assets[0].url.split("?")[1] || [])
-  //   );
-  // };
-
   const getNextTrack = () => {
     getHistory();
-    getTracks();
     store.setOnAir(true);
   };
 
+  // переключаем следующий канал из Любимых или просто по очереди
   const setSpecialNextChannel = () => {
     store.setSpinView("");
     store.setOnAir(true);
@@ -265,14 +234,12 @@ const Player = observer(() => {
 
     const channelNames = JSON.parse(localStorage.getItem("ch") || "[]");
     if (store.favoriteChannels.channels_id.length <= 1) {
-      // console.log(channelNames.length, "channelNames");
       let index = channelNames.findIndex(
         (obj: { id: number }) => obj.id === nextChannel
       );
       if (index === 430) {
         index = 0;
       }
-      // console.log(channelNames[index], index);
       store.setChannel_id(channelNames[index + 1].id);
       store.setChannel_name(channelNames[index + 1].name);
       store.setCurrentSite(
@@ -285,7 +252,6 @@ const Player = observer(() => {
         i++
       ) {
         if (store.favoriteChannels.channels_id[i] === store.channel_id) {
-          // console.log(store.channel_id);
           if (i >= len - 1) {
             nextChannel = store.favoriteChannels.channels_id[0];
           } else {
@@ -301,7 +267,6 @@ const Player = observer(() => {
           nextChannel === item.id &&
           store.favoriteChannels.channels_id.includes(nextChannel)
         ) {
-          // console.log(item);
           store.setChannel_name(item.name);
           store.setCurrentSite(store.network_ids.indexOf(item.network_id));
         }
@@ -309,6 +274,7 @@ const Player = observer(() => {
     }
   };
 
+  // создаем число треков, через которое включиться следующий канал
   const setCountPlay = () => {
     const min = store.minMax[store.options.shuffle - 1][0];
     const max = store.minMax[store.options.shuffle - 1][1];
@@ -318,15 +284,16 @@ const Player = observer(() => {
     console.log(store.countPlayingTracks, "- треков будет играть");
   };
 
+  // возвращаемся в "прямой эфир"
   const getOnAirTrack = () => {
     console.log(currentTimePlay);
     getNextTrack();
     // audioRef.current?.setJumpTime(currentTimePlay);
     // audioRef.current.audio.current.play();
     store.setOnAir(true);
-    console.log(store.onAir, "butt 2");
   };
 
+  // скачиваем текущий трек на устройство
   const downloadTrack = () => {
     try {
       fetch(`${store.currentPlaying.url}`)
@@ -344,6 +311,7 @@ const Player = observer(() => {
     }
   };
 
+  // получаем все треки текущего канала с нашего storage и перемешиваем
   const getAllChannelTracks = () => {
     fetch(
       `https://qh8bsvaksadb2kj9.public.blob.vercel-storage.com/${
@@ -355,8 +323,8 @@ const Player = observer(() => {
       .then((response) => response.json())
       .then((data) => {
         {
-          setAllChannelTracks(data.sort(() => Math.random() - 0.5));
-          setIdChannelForNext(store.channel_id);
+          store.setAllChannelTracks(data.sort(() => Math.random() - 0.5));
+          // setIdChannelForNext(store.channel_id);
         }
       })
       .catch((error) => {
@@ -364,32 +332,22 @@ const Player = observer(() => {
       });
   };
 
+  // включаем случайный трек с любого сайта и канала
   const getRandomTrack = () => {
     store.setSpinView("");
     store.setOnAir(false);
-    // console.log(idChannelForNext, "next!");
-    if (
-      allChannelTracks.length === 0 ||
-      idChannelForNext !== store.channel_id
-    ) {
-      getAllChannelTracks();
-    }
+    const audio_data = String(localStorage.getItem("data")).slice(1, -1);
 
-    // console.log(store.channel_id);
-    // console.log(allChannelTracks);
-    const audio_token = String(localStorage.getItem("data")).slice(1, -1);
-
-    const rndTrack = Math.floor(Math.random() * allChannelTracks.length);
-    // console.log(rndTrack);
+    const rndTrack = Math.floor(Math.random() * store.allChannelTracks.length);
 
     store.setCurrentPlaying({
-      track: allChannelTracks[rndTrack].track,
-      url: `https:${allChannelTracks[rndTrack].url}?${audio_token}`,
-      asset_url: allChannelTracks[rndTrack].asset_url,
+      track: store.allChannelTracks[rndTrack].track,
+      url: `https:${store.allChannelTracks[rndTrack].url}?${audio_data}`,
+      asset_url: store.allChannelTracks[rndTrack].asset_url,
     });
-    // console.log("random!!");
   };
 
+  // добавляем текущий трек в Избранное (playlist)
   const addPlaylist = () => {
     const allStarTracks = JSON.parse(localStorage.getItem("stars") || "[]");
 
@@ -417,26 +375,19 @@ const Player = observer(() => {
     store.setRemoveStarTrack(true);
   };
 
-  // useEffect(() => {
-  //   audioRef.current?.setJumpTime(currentTimePlay);
-  // }, [currentTimePlay]);
-
-  // useEffect(() => {
-  //   getAllChannelTracks();
-  // }, [allChannelTracks]);
-
+  // переключили канал или сайт
   useEffect(() => {
-    getTracks();
+    getAllChannelTracks();
     getHistory();
-    // getChannels();
     store.setAllTracksOfflineView(false);
-    // getAllChannelTracks();
   }, [store.channel_id, store.currentSite]);
 
+  // включаем из 5 текущих треков официального api, тот, который должен играть сейчас
   useEffect(() => {
+    console.log("currentTrackId!");
     dataTrack?.map((item: any) => {
       if (currentTrackId === item.id) {
-        setCurrentTrack(item);
+        // setCurrentTrack(item);
         store.setCurrentPlaying({
           track: item.track,
           url: "https:" + item.content.assets[0].url,
@@ -444,11 +395,11 @@ const Player = observer(() => {
         });
       }
     });
-    // setAudioToken();
     // audioRef.current?.setJumpTime(300);
     // audioRef.current?.setJumpTime(currentTimePlay);
   }, [dataTrack]);
 
+  // находим время, сколько осталось до конца звучания текущего трека
   useEffect(() => {
     Object.values(dataHistory).map((item: any) => {
       if (item.channel_id === store.channel_id) {
@@ -459,47 +410,48 @@ const Player = observer(() => {
         setCurrentTimePlay(timeLeft * 1000);
       }
     });
+    // setHistoryPlayingTrack();
 
     // console.log(audioRef.current?.duration);
     // audioRef.current?.setJumpTime(currentTimePlay);
   }, [dataHistory]);
 
-  // useEffect(() => {
-  //   // console.log(typeof dataChannels, dataChannels, "eff!");
-  //   if (Object.keys(dataChannels).length !== 0) {
-  //     // console.log(dataChannels.length);
-
-  //     localStorage.setItem("ch", JSON.stringify(dataChannels.infoCh));
-  //     store.setAllStationsDataLoaded(true);
-  //   }
-
-  //   const allNames: { id: number; name: string }[] = [];
-  //   // const allIds: { id: number }[] = [];
-  //   // ВСЕ ИМЕНА КАНАЛОВ!! ТУТ УСТАНАВЛИВАЕТ ПРАВИЛЬНО!
-  //   dataChannels.data?.map((item: any) => {
-  //     allNames.push({ id: item.id, name: item.name });
-  //     // console.log(item.id, item.name);
-  //     // allIds.push(item.id);
-  //   });
-  //   // console.log(typeof allIds, allIds);
-  //   store.setAllStationsNames(allNames);
-  //   // setAllStationIds(allIds);
-  //   // store.setAllStationIds(allIds);
-  // }, [dataChannels]);
-
+  // изменили настройки частоты переключения каналов
   useEffect(() => {
     setCountPlay();
   }, [store.options.shuffle]);
 
+  // находим текущий трек из всех существующих в треках с нашего storage и включаем
   useEffect(() => {
-    // getAllTokens();
-    // const channelNames = JSON.parse(localStorage.getItem("ch") || "0");
-    // if (channelNames === 0) {
-    //   getChannels();
-    // } else {
-    //   store.setAllStationsDataLoaded(true);
-    // }
+    store.setOnAir(true);
+    const audio_data = String(localStorage.getItem("data")).slice(1, -1);
+    let foundMatch = false;
+    Object.values(dataHistory).map((item: any) => {
+      if (item.channel_id === store.channel_id) {
+        store.allChannelTracks.map((i: any) => {
+          if (item.track_id === i.id) {
+            console.log(i.id, "наш!");
+            store.setCurrentPlaying({
+              track: i.track,
+              url: `https:${i.url}?${audio_data}`,
+              asset_url: "https:" + i.asset_url,
+            });
+            setIsUpdate(false);
+            foundMatch = true;
+            return;
+          }
+        });
+      }
+    });
+    // Запасная функция getTracks, если на storage нет трека - обращаемся к официальному api
+    if (!foundMatch && !getTracksCalledRef.current) {
+      getTracks();
+      getTracksCalledRef.current = true;
+    }
+    setHistoryPlayingTrack();
+  }, [isUpdate, store.allChannelTracks]);
 
+  useEffect(() => {
     const os = navigator.userAgent;
     // if (os.includes("Android")) {
     //   console.log("Android");
@@ -603,13 +555,14 @@ const Player = observer(() => {
             onLoadedData={() => {
               // audioRef.current?.setJumpTime(currentTimePlay);
               console.log("onLoadedData");
+              // setHistoryPlayingTrack();
             }}
             onPlay={() => {
               // audioRef.current?.setJumpTime(currentTimePlay);
               {
                 setIsPlaying(true);
                 document.title = `${store.currentPlaying.track}`;
-                setHistoryPlayingTrack();
+                // setHistoryPlayingTrack();
               }
             }}
             onPause={() => {
@@ -665,12 +618,8 @@ const Player = observer(() => {
             className="relative bottom-6 left-12 w-[70px]"
             onClick={() => {
               getOnAirTrack();
-              // console.log(currentTimePlay);
-              // // getNextTrack();
               // audioRef.current?.setJumpTime(currentTimePlay);
               // audioRef.current.audio.current.play();
-              // store.setOnAir(true);
-              // console.log(store.onAir, "butt 2");
             }}
             title="Вернуться в прямой эфир"
           >
@@ -682,8 +631,6 @@ const Player = observer(() => {
           className="fixed bottom-8 right-12 w-[50px]"
           onClick={() => {
             setSpecialNextChannel();
-            // audioRef.current.audio.current.play();
-            // store.setOnAir(false);
           }}
         >
           <svg width="19" height="24" viewBox="0 0 19 24" fill="none">
@@ -712,11 +659,8 @@ const Player = observer(() => {
                   className="z-30 absolute top-10 right-10 cursor-pointer"
                   onClick={() => {
                     store.setfavoriteChannels(store.channel_id);
-                    // store.setfavoriteChannels({
-                    //   currentSite: store.currentSite,
-                    //   channel_id: store.channel_id,
-                    // });
                   }}
+                  title="Убрать из любимых каналов"
                 >
                   <svg width="33" height="29" viewBox="0 0 33 29" fill="none">
                     <path
@@ -730,6 +674,8 @@ const Player = observer(() => {
                   className="z-30 absolute top-10 right-10 cursor-pointer"
                   onClick={() => {
                     store.setfavoriteChannels(store.channel_id);
+                    setIsFav(true);
+                    setTimeout(() => setIsFav(false), 2000);
                   }}
                   title="Добавить в любимые каналы"
                 >
@@ -747,7 +693,11 @@ const Player = observer(() => {
               <div className="w-full sm:w-[300px]">
                 <div
                   className="z-30 absolute top-[60%] right-20 cursor-pointer opacity-50 hover:opacity-100"
-                  onClick={() => addPlaylist()}
+                  onClick={() => {
+                    addPlaylist();
+                    setIsPlay(true);
+                    setTimeout(() => setIsPlay(false), 2000);
+                  }}
                   title="Добавить в избранные треки"
                 >
                   <svg width="29" height="27" viewBox="0 0 29 27" fill="none">
@@ -797,7 +747,6 @@ const Player = observer(() => {
                   ref={imageRef}
                   className="cursor-grab active:cursor-grabbing transition-transform duration-300"
                   onClick={() => store.setSizePlayer(false)}
-                  // src={"https:" + currentTrack?.asset_url}
                   src={
                     store.currentPlaying.asset_url === "https:null"
                       ? "//cdn-images.audioaddict.com/a/7/3/c/6/c/a73c6ccba5f077b956835714d7e3d9a8.png"
@@ -818,7 +767,7 @@ const Player = observer(() => {
                 />
               </div>
 
-              <div className="pl-10">
+              <div className="pl-0 sm:pl-10">
                 <p
                   onClick={() => store.setSizePlayer(false)}
                   className="text-sky-400 sm:text-2xl text-base font-bold"
@@ -832,11 +781,49 @@ const Player = observer(() => {
                 >
                   {store.currentPlaying.track}
                 </p>
-                {/* {isCopied && (
-                  <div className="mt-2 text-teal-600 text-base">
-                    Артист и название трека скопированы!
+
+                {isFav && (
+                  <div className="fixed bottom-40 right-4 z-50">
+                    <div className="bg-black bg-opacity-70 text-white px-4 py-3 rounded-lg shadow-lg flex items-center">
+                      <svg
+                        className="w-5 h-5 mr-2 text-teal-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={3}
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                      <span>Канал добавлен в Любимые</span>
+                    </div>
                   </div>
-                )} */}
+                )}
+
+                {isPlay && (
+                  <div className="fixed bottom-40 right-4 z-50">
+                    <div className="bg-black bg-opacity-70 text-white px-4 py-3 rounded-lg shadow-lg flex items-center">
+                      <svg
+                        className="w-5 h-5 mr-2 text-teal-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={3}
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                      <span>Трек добавлен в Избранное</span>
+                    </div>
+                  </div>
+                )}
+
                 {isCopied && (
                   <div className="fixed bottom-40 right-4 z-50">
                     <div className="bg-black bg-opacity-70 text-white px-4 py-3 rounded-lg shadow-lg flex items-center">
@@ -942,7 +929,7 @@ const Player = observer(() => {
               </div>
             )}
             <div
-              className="fixed bottom-7 right-0 w-[50px] cursor-pointer"
+              className="absolute bottom-7 right-0 w-[50px] cursor-pointer"
               onClick={() => {
                 setSpecialNextChannel();
                 // audioRef.current.audio.current.play();

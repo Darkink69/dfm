@@ -83,7 +83,7 @@ const FavoriteChannels = observer(() => {
   return (
     <>
       <div
-        className="pt-20 pl-4 pr-4 pb-2"
+        className="pt-20 pl-4 pr-4 pb-3"
         onClick={() => {
           if (!store.allFavChannelsView) {
             getAllChannels();

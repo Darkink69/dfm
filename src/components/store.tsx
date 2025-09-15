@@ -17,19 +17,25 @@ class Store {
   channel_name = localStorage.getItem("channel_name") || "Classic EuroDance";
   onlyChannelIds: any = [];
 
-  premium = "615841863e5533f627fa26bd6e921776";
-  // allTokens: any = [this.premium];
-  // allTokens: any = [0];
+  premium = [
+    "615841863e5533f627fa26bd6e921776",
+    "055e654b1236dd686b31094e1c5495f2",
+  ];
+
   allTokens: any = [
+    "8885f1f3df43170c0eaaf16ce5ded0c2",
     "7e938c7250620a6fa561a93e733224a3",
-    "9c6018c2679a51df92a51feab8f169e4",
-    "958b3ee79e1b5cac40b80a71a1bf463b",
+    "1990f9af93b76a67f98b17c91bb5419e",
+    "5f83014c79ad672b674d5f8a9464bec4",
   ];
 
   dataChannels = [];
   allStationsData = [{}];
+  allChannelTracks: any = [];
   allStationsDataLoaded = false;
   removeStarTrack = false;
+
+  // historyData = [];
 
   options = JSON.parse(
     localStorage.getItem("options") || '{"shuffle":2,"favChannels":1}'
@@ -78,6 +84,10 @@ class Store {
 
   setAllTokens(allTokens: any) {
     this.allTokens = allTokens;
+  }
+
+  setAllChannelTracks(allChannelTracks: any) {
+    this.allChannelTracks = allChannelTracks;
   }
 
   setCurrentPlaying(currentPlaying: {
@@ -201,6 +211,10 @@ class Store {
   setMenuView(view: boolean) {
     this.menuView = view;
   }
+
+  // setHistoryData(data: any) {
+  //   this.historyData = data;
+  // }
 
   setHistoryView(view: boolean) {
     this.historyView = view;

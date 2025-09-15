@@ -98,7 +98,7 @@ const CardTrackOffline = observer(({ data }: any) => {
             onClick={() => setViewItem(!viewItem)}
             className="absolute opacity-80"
           >
-            {viewItem ? (
+            {viewItem && (
               <div className="relative w-full p-4 bg-black cursor-pointer left-40">
                 <div
                   onClick={() => downloadTrack()}
@@ -145,8 +145,6 @@ const CardTrackOffline = observer(({ data }: any) => {
                   </div>
                 </div>
               </div>
-            ) : (
-              ""
             )}
           </div>
         </div>

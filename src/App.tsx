@@ -3,7 +3,7 @@ import { Analytics } from "@vercel/analytics/react";
 import AllChannels from "./components/AllChannels";
 import AllTracksOffline from "./components/AllTracksOffline";
 import BlackBG from "./components/BlackBG";
-import DefaultChannels from "./components/DefaultChannels";
+// import DefaultChannels from "./components/DefaultChannels";
 import FavoriteChannels from "./components/FavoriteChannels";
 import Header from "./components/Header";
 import Player from "./components/Player";
@@ -19,10 +19,21 @@ import store from "./components/store";
 import { useEffect, useState } from "react";
 import Loader from "./components/Loader";
 
+interface DataTrack {
+  asset_url: string;
+  id: number;
+  length: number;
+  size?: null;
+  track: string;
+  ts: number;
+  url: string;
+}
+
 const App = observer(() => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [dataChannels, setDataChannels] = useState<any>({});
 
+  // запас audio_token на нашем storage
   const getAllTokens = () => {
     fetch(
       `https://qh8bsvaksadb2kj9.public.blob.vercel-storage.com/audio/audio.json`
@@ -62,7 +73,7 @@ const App = observer(() => {
       .catch((error) => {
         console.error(error);
         console.log("Audio Token problem. We this one attempt again...");
-        getAllTokens();
+        setTimeout(() => getAllTokens(), 2000);
       });
   };
 
@@ -92,6 +103,27 @@ const App = observer(() => {
     });
   };
 
+  // получаем все треки текущего канала с нашего storage и перемешиваем
+  const getAllChannelTracks = () => {
+    fetch(
+      `https://qh8bsvaksadb2kj9.public.blob.vercel-storage.com/${
+        store.sites[store.currentSite]
+      }/db_${store.sites[store.currentSite]}_full_${
+        store.channel_id
+      }_light.json`
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        {
+          store.setAllChannelTracks(data.sort(() => Math.random() - 0.5));
+        }
+      })
+      .catch((error) => {
+        console.error("Не удалось получиться все треки со storage", error);
+      });
+  };
+
+  // подготавливаем имена каналов
   useEffect(() => {
     if (Object.keys(dataChannels).length !== 0) {
       console.log(dataChannels.length);
@@ -110,6 +142,7 @@ const App = observer(() => {
 
   useEffect(() => {
     getAllTokens();
+    getAllChannelTracks();
     const channelNames = JSON.parse(localStorage.getItem("ch") || "0");
     if (channelNames == "0") {
       getChannels();
@@ -117,6 +150,19 @@ const App = observer(() => {
       store.setAllStationsDataLoaded(true);
     }
   }, []);
+
+  // useEffect(() => {
+  //   const data = localStorage.getItem("historyData");
+  //   if (data) {
+  //     try {
+  //       const parsedItems: DataTrack[] = JSON.parse(data);
+  //       store.setHistoryData(parsedItems);
+  //     } catch (error) {
+  //       store.setHistoryData([]);
+  //       console.error("Ошибка парсинга данных из localStorage", error);
+  //     }
+  //   }
+  // }, []);
 
   return (
     <>
@@ -128,7 +174,7 @@ const App = observer(() => {
       ) : (
         <div>
           <WaitAnimation />
-          <History />
+          {/* <History /> */}
           <div className="fixed -z-50 w-full h-full bg-slate-700"></div>
           <div className="fixed bg-black z-50 h-[60px] w-full shadow-md">
             <Header />
@@ -143,13 +189,14 @@ const App = observer(() => {
               <AllChannels />
               <AllTracksOffline />
               <AllStarTracks />
-              <DefaultChannels />
+              <History />
+
+              {/* <DefaultChannels /> */}
               {/* <HamburgerMenu /> */}
             </div>
           </div>
-          <div className="">
-            <Player />
-          </div>
+
+          <Player />
         </div>
       )}
     </>

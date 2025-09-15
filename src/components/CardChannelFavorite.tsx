@@ -13,14 +13,6 @@ const CardChannelFav = observer(({ data }: any) => {
     store.setSizePlayer(true);
   };
 
-  // useEffect(() => {
-  //   store.allStationsNames.map((item: any) => {
-  //     if (data.channel_id === item.id) {
-  //       setName(item.name);
-  //     }
-  //   });
-  // }, [store.allStationsNames]);
-
   return (
     <>
       <div>

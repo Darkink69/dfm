@@ -190,20 +190,6 @@ const Menu = observer(() => {
               ""
             )}
 
-            <div className="flex items-center justify-center mb-4 pt-4">
-              <h1
-                className="text-xl cursor-pointer pr-2"
-                onClick={() => {
-                  store.setMenuView(false);
-                  store.setAllFavChannelsView(false);
-                  store.setAllChannelsView(false);
-                  store.setHistoryView(true);
-                }}
-              >
-                История прослушивания
-              </h1>
-            </div>
-
             <button
               className="bg-teal-600 text-white text-xl py-3 px-6 rounded-lg mt-auto mb-20 mx-auto w-full sm:w-1/4"
               onClick={() => console.log("Donate!")}

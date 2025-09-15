@@ -27,7 +27,7 @@ const AllChannels = observer(() => {
     <>
       <div
         className={
-          store.allFavChannelsView ? "pl-4 pr-4 mt-8" : "pl-4 pr-4 pb-2"
+          store.allFavChannelsView ? "pl-4 pr-4 mt-8" : "pl-4 pr-4 pb-3"
         }
       >
         <div
