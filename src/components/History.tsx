@@ -87,21 +87,22 @@ const History = observer(() => {
 
             <div className="pl-4 grid grid-cols-1 scroll-auto">
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 text-left grid-cols-1">
-                {historyData?.map((item: any) => {
-                  return [
+                {historyData?.map((item: any) => (
+                  <div key={item.ts + item.id} className="history-item">
                     <div className="pt-4 pl-1 text-white text-sm">
                       {formatTimestamp(item.ts)}
-                    </div>,
-                    <CardTrackOffline data={item} key={item.ts} />,
-                  ];
-                })}
+                    </div>
+                    <CardTrackOffline data={item} />
+                  </div>
+                ))}
               </div>
               {historyData ? (
                 <div
                   className="text-white text-xs opacity-50 pt-4 cursor-pointer"
-                  onClick={() =>
-                    localStorage.setItem("historyData", JSON.stringify([]))
-                  }
+                  onClick={() => {
+                    localStorage.setItem("historyData", JSON.stringify([]));
+                    store.setHistoryView(false);
+                  }}
                 >
                   Очистить историю
                 </div>

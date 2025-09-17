@@ -13,12 +13,13 @@ const AllTracksOffline = observer(() => {
   const inputRef = useRef<any>();
 
   const getAllChannelTracks = () => {
+    const premium = store.bitratePremium ? "premium_" : "";
     fetch(
       `https://qh8bsvaksadb2kj9.public.blob.vercel-storage.com/${
         store.sites[store.currentSite]
       }/db_${store.sites[store.currentSite]}_full_${
         store.channel_id
-      }_light.json`
+      }_${premium}light.json`
     )
       .then((response) => response.json())
       .then((data) => {

@@ -85,10 +85,9 @@ const FavoriteChannels = observer(() => {
       <div
         className="pt-20 pl-4 pr-4 pb-3"
         onClick={() => {
-          if (!store.allFavChannelsView) {
+          if (store.allFavChannelsView) {
             getAllChannels();
           }
-          store.setAllFavChannelsView(!store.allFavChannelsView);
         }}
       >
         <div className="flex items-center bg-slate-800">
@@ -102,7 +101,12 @@ const FavoriteChannels = observer(() => {
             />
           </svg>
 
-          <div className="pl-4 w-full text-white text-xl cursor-pointer">
+          <div
+            className="pl-4 w-full text-white text-xl cursor-pointer"
+            onClick={() =>
+              store.setAllFavChannelsView(!store.allFavChannelsView)
+            }
+          >
             Мои любимые каналы
           </div>
           <svg

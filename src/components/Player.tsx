@@ -30,6 +30,15 @@ const Player = observer(() => {
   const [isPlay, setIsPlay] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
   const getTracksCalledRef = useRef(false);
+  const previousTrackIdRef = useRef<number | null>(null);
+  const retryCountRef = useRef(0);
+  const endPlayingRef = useRef(false);
+  const maxRetries = 15; // Максимальное количество попыток
+
+  const textRef = useRef<HTMLParagraphElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
+  const audioRef = useRef<any>(null);
+  const svgRef = useRef<any>(null);
 
   interface DataTrack {
     asset_url: string;
@@ -43,12 +52,61 @@ const Player = observer(() => {
 
   const [historyData, setHistoryData] = useState<DataTrack[]>([]);
 
-  const textRef = useRef<HTMLParagraphElement>(null);
-  const imageRef = useRef<HTMLImageElement>(null);
-  const audioRef = useRef<any>(null);
-  const svgRef = useRef<any>(null);
+  // Функция для загрузки данных из localStorage при монтировании
+  useEffect(() => {
+    const loadHistoryData = () => {
+      const data = localStorage.getItem("historyData");
+      if (data) {
+        try {
+          const parsedItems: DataTrack[] = JSON.parse(data) || [];
+          setHistoryData(parsedItems);
+        } catch (error) {
+          console.error("Ошибка парсинга данных из localStorage", error);
+          setHistoryData([]);
+        }
+      }
+    };
+
+    loadHistoryData();
+  }, []);
 
   // добавляем трек в историю прослушивания
+  // const setHistoryPlayingTrack = () => {
+  //   Object.values(dataHistory).forEach((item: any) => {
+  //     if (item.channel_id === store.channel_id) {
+  //       const nowData: DataTrack = {
+  //         asset_url: item.art_url,
+  //         id: item.track_id,
+  //         length: item.length,
+  //         size: null,
+  //         track: item.track,
+  //         url: store.currentPlaying.url.split("?")[0].split("https:")[1],
+  //         ts: Date.now(),
+  //       };
+
+  //       // Обновляем состояние с ограничением размера
+  //       setHistoryData((prev: DataTrack[]) => {
+  //         // Добавляем новый элемент в начало
+  //         const newHistory = [nowData, ...prev];
+
+  //         // Проверяем, не превысили ли лимит
+  //         if (newHistory.length > 1000) {
+  //           // Удаляем 100 последних элементов
+  //           const trimmedHistory = newHistory.slice(0, 900); // Оставляем первые 900 элементов
+
+  //           // Сохраняем в localStorage
+  //           localStorage.setItem("historyData", JSON.stringify(trimmedHistory));
+  //           return trimmedHistory;
+  //         }
+
+  //         // Сохраняем в localStorage
+  //         localStorage.setItem("historyData", JSON.stringify(newHistory));
+  //         return newHistory;
+  //       });
+  //     }
+  //   });
+  // };
+
   const setHistoryPlayingTrack = () => {
     const data = localStorage.getItem("historyData");
     if (data) {
@@ -57,6 +115,7 @@ const Player = observer(() => {
         setHistoryData(parsedItems);
       } catch (error) {
         setHistoryData([]);
+        localStorage.setItem("historyData", JSON.stringify([]));
         console.error("Ошибка парсинга данных из localStorage", error);
       }
     }
@@ -74,6 +133,26 @@ const Player = observer(() => {
         };
         setHistoryData((prev: any) => [nowData, ...prev]);
         localStorage.setItem("historyData", JSON.stringify(historyData));
+
+        // setHistoryData((prev: DataTrack[]) => {
+        //   // Добавляем новый элемент в начало
+        //   const newHistory = [nowData, ...prev];
+        //   console.log(newHistory);
+
+        //   // Проверяем, не превысили ли лимит
+        //   // if (newHistory.length > 1000) {
+        //   //   // Удаляем 100 последних элементов
+        //   //   const trimmedHistory = newHistory.slice(0, 900); // Оставляем первые 900 элементов
+
+        //   //   // Сохраняем в localStorage
+        //   //   localStorage.setItem("historyData", JSON.stringify(trimmedHistory));
+        //   //   return trimmedHistory;
+        //   // }
+
+        //   // Сохраняем в localStorage
+        //   localStorage.setItem("historyData", JSON.stringify(newHistory));
+        //   return newHistory;
+        // });
       }
     });
   };
@@ -302,7 +381,7 @@ const Player = observer(() => {
           const url = window.URL.createObjectURL(blob);
           const a = document.createElement("a");
           a.href = url;
-          a.download = `${store.currentPlaying.track}.mp4`;
+          a.download = `${store.currentPlaying.track}.mp3`;
           a.click();
           window.URL.revokeObjectURL(url);
         });
@@ -313,12 +392,13 @@ const Player = observer(() => {
 
   // получаем все треки текущего канала с нашего storage и перемешиваем
   const getAllChannelTracks = () => {
+    const premium = store.bitratePremium ? "premium_" : "";
     fetch(
       `https://qh8bsvaksadb2kj9.public.blob.vercel-storage.com/${
         store.sites[store.currentSite]
       }/db_${store.sites[store.currentSite]}_full_${
         store.channel_id
-      }_light.json`
+      }_${premium}light.json`
     )
       .then((response) => response.json())
       .then((data) => {
@@ -426,11 +506,13 @@ const Player = observer(() => {
     store.setOnAir(true);
     const audio_data = String(localStorage.getItem("data")).slice(1, -1);
     let foundMatch = false;
+    let currentTrackId: number | null = null;
     Object.values(dataHistory).map((item: any) => {
       if (item.channel_id === store.channel_id) {
         store.allChannelTracks.map((i: any) => {
           if (item.track_id === i.id) {
             console.log(i.id, "наш!");
+            currentTrackId = i.id; // Запоминаем текущий ID
             store.setCurrentPlaying({
               track: i.track,
               url: `https:${i.url}?${audio_data}`,
@@ -443,12 +525,42 @@ const Player = observer(() => {
         });
       }
     });
+
+    // Если нашли совпадение и есть текущий ID
+    if (foundMatch && currentTrackId !== null) {
+      // Сравниваем с предыдущим ID
+      if (
+        previousTrackIdRef.current === currentTrackId &&
+        endPlayingRef.current
+      ) {
+        // ID совпадают - ждем и запускаем getHistory()
+        if (retryCountRef.current < maxRetries) {
+          retryCountRef.current += 1;
+          console.log(
+            `ID совпадают (${currentTrackId}). Попытка ${retryCountRef.current}/${maxRetries}`
+          );
+
+          setTimeout(() => {
+            getHistory(); // Запускаем обновление истории
+          }, 2000);
+        } else {
+          console.log("Достигнут лимит попыток. Прекращаем проверку.");
+          retryCountRef.current = 0; // Сбрасываем счетчик
+        }
+      } else {
+        // ID разные - сбрасываем счетчик и запоминаем новый ID
+        endPlayingRef.current = false;
+        retryCountRef.current = 0;
+        previousTrackIdRef.current = currentTrackId;
+      }
+    }
+
     // Запасная функция getTracks, если на storage нет трека - обращаемся к официальному api
     if (!foundMatch && !getTracksCalledRef.current) {
       getTracks();
       getTracksCalledRef.current = true;
     }
-    setHistoryPlayingTrack();
+    // setHistoryPlayingTrack();
   }, [isUpdate, store.allChannelTracks]);
 
   useEffect(() => {
@@ -555,7 +667,7 @@ const Player = observer(() => {
             onLoadedData={() => {
               // audioRef.current?.setJumpTime(currentTimePlay);
               console.log("onLoadedData");
-              // setHistoryPlayingTrack();
+              setHistoryPlayingTrack();
             }}
             onPlay={() => {
               // audioRef.current?.setJumpTime(currentTimePlay);
@@ -571,6 +683,7 @@ const Player = observer(() => {
               store.setOnAir(false);
             }}
             onEnded={() => {
+              endPlayingRef.current = true;
               store.setSpinView("");
               if (store.options.shuffle === 1) {
                 getNextTrack();

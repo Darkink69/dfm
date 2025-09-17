@@ -15,7 +15,7 @@ const CardTrackStar = observer(({ data }: any) => {
           const url = window.URL.createObjectURL(blob);
           const a = document.createElement("a");
           a.href = url;
-          a.download = `${data.track}.mp4`;
+          a.download = `${data.track}.mp3`;
           a.click();
           window.URL.revokeObjectURL(url);
         });

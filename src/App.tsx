@@ -19,16 +19,6 @@ import store from "./components/store";
 import { useEffect, useState } from "react";
 import Loader from "./components/Loader";
 
-interface DataTrack {
-  asset_url: string;
-  id: number;
-  length: number;
-  size?: null;
-  track: string;
-  ts: number;
-  url: string;
-}
-
 const App = observer(() => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [dataChannels, setDataChannels] = useState<any>({});
@@ -105,12 +95,13 @@ const App = observer(() => {
 
   // получаем все треки текущего канала с нашего storage и перемешиваем
   const getAllChannelTracks = () => {
+    const premium = store.bitratePremium ? "premium_" : "";
     fetch(
       `https://qh8bsvaksadb2kj9.public.blob.vercel-storage.com/${
         store.sites[store.currentSite]
       }/db_${store.sites[store.currentSite]}_full_${
         store.channel_id
-      }_light.json`
+      }_${premium}light.json`
     )
       .then((response) => response.json())
       .then((data) => {
@@ -150,19 +141,6 @@ const App = observer(() => {
       store.setAllStationsDataLoaded(true);
     }
   }, []);
-
-  // useEffect(() => {
-  //   const data = localStorage.getItem("historyData");
-  //   if (data) {
-  //     try {
-  //       const parsedItems: DataTrack[] = JSON.parse(data);
-  //       store.setHistoryData(parsedItems);
-  //     } catch (error) {
-  //       store.setHistoryData([]);
-  //       console.error("Ошибка парсинга данных из localStorage", error);
-  //     }
-  //   }
-  // }, []);
 
   return (
     <>

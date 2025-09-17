@@ -34,6 +34,9 @@ class Store {
   allChannelTracks: any = [];
   allStationsDataLoaded = false;
   removeStarTrack = false;
+  bitratePremium = Boolean(
+    JSON.parse(localStorage.getItem("premium") || "false")
+  );
 
   // historyData = [];
 
@@ -218,6 +221,12 @@ class Store {
 
   setHistoryView(view: boolean) {
     this.historyView = view;
+  }
+
+  setBitratePremium(bit: boolean) {
+    this.bitratePremium = bit;
+    localStorage.setItem("premium", String(bit));
+    location.reload();
   }
 
   setServerError(err: boolean) {

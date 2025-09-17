@@ -28,14 +28,6 @@ const Menu = observer(() => {
     store.setChannel_name(rndChannel.name);
   };
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     setViewTipsRnd(false);
-  //     setViewTipsSwitch(false);
-  //     console.log("Таймаут!!");
-  //   }, 10000);
-  // }, [viewTipsRnd, viewTipsSwitch]);
-
   useEffect(() => {
     // const os = navigator.userAgent;
     // if (os.includes("Android")) {
@@ -79,7 +71,7 @@ const Menu = observer(() => {
                   />
                 </svg>
               </div>
-              {viewTipsRnd ? (
+              {viewTipsRnd && (
                 <div className="absolute w-[200px] p-4 bg-black cursor-pointer opacity-80">
                   <div
                     className="text-white text-base pb-2"
@@ -91,8 +83,6 @@ const Menu = observer(() => {
                     </div>
                   </div>
                 </div>
-              ) : (
-                ""
               )}
             </div>
 
@@ -113,6 +103,56 @@ const Menu = observer(() => {
             </div>
             {viewOptions ? (
               <div className="mb-6">
+                <div className="flex items-center justify-center mb-2">
+                  <h3 className="text-white text-base pr-2">
+                    Качество звучания
+                  </h3>
+                </div>
+
+                <div className="flex-col mb-8">
+                  <div className="flex items-center justify-center space-x-6">
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="radio"
+                        name="bitrate"
+                        value="64"
+                        checked={!store.bitratePremium}
+                        onChange={() => store.setBitratePremium(false)}
+                        className="w-4 h-4 text-teal-400 bg-teal-400 border-teal-400"
+                      />
+                      <span
+                        className={
+                          !store.bitratePremium
+                            ? "ml-2 text-base text-teal-400 font-bold"
+                            : "ml-2 text-white"
+                        }
+                      >
+                        64 кбит/с AAC-HE
+                      </span>
+                    </label>
+
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="radio"
+                        name="bitrate"
+                        value="320"
+                        checked={store.bitratePremium}
+                        onChange={() => store.setBitratePremium(true)}
+                        className="w-4 h-4 text-teal-400 bg-gray-100 border-teal-400"
+                      />
+                      <span
+                        className={
+                          store.bitratePremium
+                            ? "ml-2 text-base text-teal-400 font-bold"
+                            : "ml-2 text-white"
+                        }
+                      >
+                        320 кбит/с MP3
+                      </span>
+                    </label>
+                  </div>
+                </div>
+
                 <div className="flex items-center justify-center mb-4">
                   <h3 className="text-white text-base pr-2">
                     Автопереключение каналов
@@ -138,7 +178,7 @@ const Menu = observer(() => {
                       />
                     </svg>
                   </div>
-                  {viewTipsSwitch ? (
+                  {viewTipsSwitch && (
                     <div className="absolute w-[300px] p-4 bg-black cursor-pointer opacity-80">
                       <div
                         className="text-white text-base pb-2"
@@ -151,8 +191,6 @@ const Menu = observer(() => {
                         </div>
                       </div>
                     </div>
-                  ) : (
-                    ""
                   )}
                 </div>
                 <div className="flex items-center justify-center">
