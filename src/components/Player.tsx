@@ -9,16 +9,9 @@ import OffAir from "./offAir";
 const Player = observer(() => {
   const [dataTrack, setDataTrack] = useState([]);
   const [dataHistory, setDataHistory] = useState([]);
-  // const [dataChannels, setDataChannels] = useState<any>({});
-  // const [allStationIds, setAllStationIds] = useState<any[]>([]);
-  // const [currentTrack, setCurrentTrack] = useState<any>();
-  // const [allTokens, setAllTokens] = useState<any>();
   const [currentTrackId, setCurrentTrackId] = useState(null);
-  const [currentTimePlay, setCurrentTimePlay] = useState(Number);
+  const [_currentTimePlay, setCurrentTimePlay] = useState(Number);
   const [isPlaying, setIsPlaying] = useState(false);
-  // const [isLoaded, setIsLoaded] = useState(false);
-  // const [allChannelTracks, setAllChannelTracks] = useState<any>([]);
-  // const [idChannelForNext, setIdChannelForNext] = useState(Number);
 
   const [isSwiping, setIsSwiping] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -53,60 +46,20 @@ const Player = observer(() => {
   const [historyData, setHistoryData] = useState<DataTrack[]>([]);
 
   // Функция для загрузки данных из localStorage при монтировании
-  useEffect(() => {
-    const loadHistoryData = () => {
-      const data = localStorage.getItem("historyData");
-      if (data) {
-        try {
-          const parsedItems: DataTrack[] = JSON.parse(data) || [];
-          setHistoryData(parsedItems);
-        } catch (error) {
-          console.error("Ошибка парсинга данных из localStorage", error);
-          setHistoryData([]);
-        }
+  const loadHistoryData = () => {
+    const data = localStorage.getItem("historyData");
+    if (data) {
+      try {
+        const parsedItems: DataTrack[] = JSON.parse(data) || [];
+        setHistoryData(parsedItems);
+      } catch (error) {
+        console.error("Ошибка парсинга данных из localStorage", error);
+        setHistoryData([]);
       }
-    };
-
-    loadHistoryData();
-  }, []);
+    }
+  };
 
   // добавляем трек в историю прослушивания
-  // const setHistoryPlayingTrack = () => {
-  //   Object.values(dataHistory).forEach((item: any) => {
-  //     if (item.channel_id === store.channel_id) {
-  //       const nowData: DataTrack = {
-  //         asset_url: item.art_url,
-  //         id: item.track_id,
-  //         length: item.length,
-  //         size: null,
-  //         track: item.track,
-  //         url: store.currentPlaying.url.split("?")[0].split("https:")[1],
-  //         ts: Date.now(),
-  //       };
-
-  //       // Обновляем состояние с ограничением размера
-  //       setHistoryData((prev: DataTrack[]) => {
-  //         // Добавляем новый элемент в начало
-  //         const newHistory = [nowData, ...prev];
-
-  //         // Проверяем, не превысили ли лимит
-  //         if (newHistory.length > 1000) {
-  //           // Удаляем 100 последних элементов
-  //           const trimmedHistory = newHistory.slice(0, 900); // Оставляем первые 900 элементов
-
-  //           // Сохраняем в localStorage
-  //           localStorage.setItem("historyData", JSON.stringify(trimmedHistory));
-  //           return trimmedHistory;
-  //         }
-
-  //         // Сохраняем в localStorage
-  //         localStorage.setItem("historyData", JSON.stringify(newHistory));
-  //         return newHistory;
-  //       });
-  //     }
-  //   });
-  // };
-
   const setHistoryPlayingTrack = () => {
     const data = localStorage.getItem("historyData");
     if (data) {
@@ -134,25 +87,14 @@ const Player = observer(() => {
         setHistoryData((prev: any) => [nowData, ...prev]);
         localStorage.setItem("historyData", JSON.stringify(historyData));
 
-        // setHistoryData((prev: DataTrack[]) => {
-        //   // Добавляем новый элемент в начало
-        //   const newHistory = [nowData, ...prev];
-        //   console.log(newHistory);
+        if (historyData.length > 1000) {
+          // Удаляем 100 последних элементов
+          const trimmedHistory = historyData.slice(0, 900); // Оставляем первые 900 элементов
 
-        //   // Проверяем, не превысили ли лимит
-        //   // if (newHistory.length > 1000) {
-        //   //   // Удаляем 100 последних элементов
-        //   //   const trimmedHistory = newHistory.slice(0, 900); // Оставляем первые 900 элементов
-
-        //   //   // Сохраняем в localStorage
-        //   //   localStorage.setItem("historyData", JSON.stringify(trimmedHistory));
-        //   //   return trimmedHistory;
-        //   // }
-
-        //   // Сохраняем в localStorage
-        //   localStorage.setItem("historyData", JSON.stringify(newHistory));
-        //   return newHistory;
-        // });
+          // Сохраняем в localStorage
+          localStorage.setItem("historyData", JSON.stringify(trimmedHistory));
+          return trimmedHistory;
+        }
       }
     });
   };
@@ -259,7 +201,6 @@ const Player = observer(() => {
 
   // получаем текущие 5 треков с api audioaddict
   const getTracks = () => {
-    console.log("getTracks сработал");
     const audio_token =
       store.allTokens[Math.floor(Math.random() * store.allTokens.length)];
     const ts = Date.now();
@@ -365,7 +306,7 @@ const Player = observer(() => {
 
   // возвращаемся в "прямой эфир"
   const getOnAirTrack = () => {
-    console.log(currentTimePlay);
+    // console.log(currentTimePlay);
     getNextTrack();
     // audioRef.current?.setJumpTime(currentTimePlay);
     // audioRef.current.audio.current.play();
@@ -464,10 +405,8 @@ const Player = observer(() => {
 
   // включаем из 5 текущих треков официального api, тот, который должен играть сейчас
   useEffect(() => {
-    console.log("currentTrackId!");
     dataTrack?.map((item: any) => {
       if (currentTrackId === item.id) {
-        // setCurrentTrack(item);
         store.setCurrentPlaying({
           track: item.track,
           url: "https:" + item.content.assets[0].url,
@@ -479,19 +418,17 @@ const Player = observer(() => {
     // audioRef.current?.setJumpTime(currentTimePlay);
   }, [dataTrack]);
 
-  // находим время, сколько осталось до конца звучания текущего трека
+  // находим время, сколько осталось до конца звучания текущего трека (пока не используется)
   useEffect(() => {
     Object.values(dataHistory).map((item: any) => {
       if (item.channel_id === store.channel_id) {
         setCurrentTrackId(item.track_id);
         const timeStamp = item?.started;
         const timeLeft = Math.floor((Date.now() - timeStamp * 1000) / 1000);
-        // console.log(timeLeft);
         setCurrentTimePlay(timeLeft * 1000);
       }
     });
     // setHistoryPlayingTrack();
-
     // console.log(audioRef.current?.duration);
     // audioRef.current?.setJumpTime(currentTimePlay);
   }, [dataHistory]);
@@ -500,6 +437,10 @@ const Player = observer(() => {
   useEffect(() => {
     setCountPlay();
   }, [store.options.shuffle]);
+
+  useEffect(() => {
+    setHistoryPlayingTrack();
+  }, [store.currentPlaying.track]);
 
   // находим текущий трек из всех существующих в треках с нашего storage и включаем
   useEffect(() => {
@@ -541,11 +482,13 @@ const Player = observer(() => {
           );
 
           setTimeout(() => {
+            store.setSpinView("");
             getHistory(); // Запускаем обновление истории
           }, 2000);
         } else {
           console.log("Достигнут лимит попыток. Прекращаем проверку.");
           retryCountRef.current = 0; // Сбрасываем счетчик
+          getRandomTrack();
         }
       } else {
         // ID разные - сбрасываем счетчик и запоминаем новый ID
@@ -558,12 +501,14 @@ const Player = observer(() => {
     // Запасная функция getTracks, если на storage нет трека - обращаемся к официальному api
     if (!foundMatch && !getTracksCalledRef.current) {
       getTracks();
+      console.log("Трек в storage не найден, переходим на официальное api");
       getTracksCalledRef.current = true;
     }
     // setHistoryPlayingTrack();
   }, [isUpdate, store.allChannelTracks]);
 
   useEffect(() => {
+    loadHistoryData();
     const os = navigator.userAgent;
     // if (os.includes("Android")) {
     //   console.log("Android");
@@ -575,7 +520,7 @@ const Player = observer(() => {
   }, []);
 
   return (
-    <>
+    <div className="container mx-auto absolute">
       <div
         className={
           store.bigPlayer
@@ -637,7 +582,7 @@ const Player = observer(() => {
           </div>
         )}
 
-        <div className="container mx-auto">
+        <div className="">
           <AudioPlayer
             ref={audioRef}
             style={{
@@ -666,8 +611,7 @@ const Player = observer(() => {
             // onLoadStart={() => store.setSpinView("")}
             onLoadedData={() => {
               // audioRef.current?.setJumpTime(currentTimePlay);
-              console.log("onLoadedData");
-              setHistoryPlayingTrack();
+              // setHistoryPlayingTrack();
             }}
             onPlay={() => {
               // audioRef.current?.setJumpTime(currentTimePlay);
@@ -679,7 +623,6 @@ const Player = observer(() => {
             }}
             onPause={() => {
               setIsPlaying(false);
-              console.log("onPause!!");
               store.setOnAir(false);
             }}
             onEnded={() => {
@@ -696,8 +639,6 @@ const Player = observer(() => {
                 getNextTrack();
                 console.log("осталось", store.countPlayingTracks);
               }
-
-              console.log("END!!");
             }}
             // onSeeking={() => console.log("onSeeking")}
             // onSeeked={() => store.setOnAir(false)}
@@ -706,7 +647,7 @@ const Player = observer(() => {
             //   store.setSpinView("");
             //   console.log("onWaiting!!!!!!");
             // }}
-            onError={() => console.log("Что пошло не туда...")}
+            // onError={() => console.log("Что пошло не туда...")}
             // onChangeCurrentTimeError={() => console.log("error!!!")}
             // onListen={() => console.log("onListen")}
           />
@@ -716,11 +657,8 @@ const Player = observer(() => {
           <div
             className="relative bottom-6 left-12 w-[70px]"
             onClick={() => {
-              // getNextTrack();
-
               // audioRef.current.audio.current.play();
               // store.setOnAir(false);
-              console.log(store.onAir, "butt 1");
             }}
             title={"Вы слушаете прямой эфир канала"}
           >
@@ -741,7 +679,7 @@ const Player = observer(() => {
         )}
 
         <div
-          className="fixed bottom-8 right-12 w-[50px]"
+          className="fixed bottom-8 sm:bottom-10 sm:right-24 right-12 w-[50px]"
           onClick={() => {
             setSpecialNextChannel();
           }}
@@ -1045,8 +983,6 @@ const Player = observer(() => {
               className="absolute bottom-7 right-0 w-[50px] cursor-pointer"
               onClick={() => {
                 setSpecialNextChannel();
-                // audioRef.current.audio.current.play();
-                // store.setOnAir(false);
               }}
               title="Следующий канал"
             >
@@ -1068,7 +1004,7 @@ const Player = observer(() => {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 });
 

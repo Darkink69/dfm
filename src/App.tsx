@@ -173,8 +173,9 @@ const App = observer(() => {
               {/* <HamburgerMenu /> */}
             </div>
           </div>
-
-          <Player />
+          <div className="z-50 fixed bottom-0 bg-black w-full h-[80px]">
+            <Player />
+          </div>
         </div>
       )}
     </>

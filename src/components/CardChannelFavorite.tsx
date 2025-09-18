@@ -3,13 +3,11 @@ import { observer } from "mobx-react-lite";
 import store from "./store";
 
 const CardChannelFav = observer(({ data }: any) => {
-  // const [name, setName] = useState("");
   const wh = window.innerWidth < 640 ? 175 : 300;
 
   const setCurrentChannelId = () => {
     store.setSpinView("");
     store.setChannel_id(data.channel_id);
-    // store.setChannel_name(name);
     store.setSizePlayer(true);
   };
 
@@ -17,7 +15,6 @@ const CardChannelFav = observer(({ data }: any) => {
     <>
       <div>
         <div onClick={() => setCurrentChannelId()} className="cursor-pointer">
-          {/* <p className="text-sky-400 text-base sm:text-xl font-bold">{name}</p> */}
           <img
             src={
               data.art_url === null

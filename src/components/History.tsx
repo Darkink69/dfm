@@ -39,7 +39,7 @@ const History = observer(() => {
         setHistoryData(parsedItems);
       } catch (error) {}
     }
-  }, [store.historyView, store.currentPlaying]);
+  }, [store.historyView, store.currentPlaying.track]);
 
   return (
     <>

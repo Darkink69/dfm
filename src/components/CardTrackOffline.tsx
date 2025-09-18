@@ -76,8 +76,11 @@ const CardTrackOffline = observer(({ data }: any) => {
           </div>
 
           <div
-            onClick={() => setViewItem(!viewItem)}
-            className="m-2 ml-6 w-2 cursor-pointer"
+            onClick={() => {
+              setViewItem(!viewItem);
+              setTimeout(() => setViewItem(false), 5000);
+            }}
+            className="relative p-2 m-2 ml-6 w-2 cursor-pointer"
           >
             <svg width="3" height="18" viewBox="0 0 4 24" fill="none">
               <path
@@ -93,59 +96,56 @@ const CardTrackOffline = observer(({ data }: any) => {
                 fill="white"
               />
             </svg>
-          </div>
-          <div
-            onClick={() => setViewItem(!viewItem)}
-            className="absolute opacity-80"
-          >
-            {viewItem && (
-              <div className="relative w-full p-4 bg-black cursor-pointer left-40">
-                <div
-                  onClick={() => downloadTrack()}
-                  className="text-white text-xl pb-2"
-                >
-                  <div className="flex items-center">
-                    <svg
-                      className="mr-2"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 16 16"
-                      fill="none"
-                    >
-                      <path
-                        d="M14 9V13.0003H2V9H0V15.0181H3.3536H16V11.4818V9H14Z"
-                        fill="white"
-                      />
-                      <path
-                        d="M6.33233 9.81408L7.99982 11.4819L10.9188 8.56259L13.004 6.47764H13.0026H9V0.492188H7V6.47764H2.99561L6.33233 9.81408Z"
-                        fill="white"
-                      />
-                    </svg>
-                    Скачать
+            <div className="absolute top-0 right-6 opacity-80">
+              {viewItem && (
+                <div className="w-[200px] p-4 bg-black cursor-pointer">
+                  <div
+                    onClick={() => downloadTrack()}
+                    className="text-white text-xl pb-2"
+                  >
+                    <div className="flex items-center">
+                      <svg
+                        className="mr-2"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 16 16"
+                        fill="none"
+                      >
+                        <path
+                          d="M14 9V13.0003H2V9H0V15.0181H3.3536H16V11.4818V9H14Z"
+                          fill="white"
+                        />
+                        <path
+                          d="M6.33233 9.81408L7.99982 11.4819L10.9188 8.56259L13.004 6.47764H13.0026H9V0.492188H7V6.47764H2.99561L6.33233 9.81408Z"
+                          fill="white"
+                        />
+                      </svg>
+                      Скачать
+                    </div>
+                  </div>
+                  <div
+                    onClick={() => addPlaylist()}
+                    className="text-white text-xl pb-2"
+                  >
+                    <div className="flex items-center">
+                      <svg
+                        className="mr-2"
+                        width="16"
+                        height="15"
+                        viewBox="0 0 16 15"
+                        fill="none"
+                      >
+                        <path
+                          d="M8 0L9.79611 5.52786H15.6085L10.9062 8.94427L12.7023 14.4721L8 11.0557L3.29772 14.4721L5.09383 8.94427L0.391548 5.52786H6.20389L8 0Z"
+                          fill="white"
+                        />
+                      </svg>
+                      В избранные
+                    </div>
                   </div>
                 </div>
-                <div
-                  onClick={() => addPlaylist()}
-                  className="text-white text-xl pb-2"
-                >
-                  <div className="flex items-center">
-                    <svg
-                      className="mr-2"
-                      width="16"
-                      height="15"
-                      viewBox="0 0 16 15"
-                      fill="none"
-                    >
-                      <path
-                        d="M8 0L9.79611 5.52786H15.6085L10.9062 8.94427L12.7023 14.4721L8 11.0557L3.29772 14.4721L5.09383 8.94427L0.391548 5.52786H6.20389L8 0Z"
-                        fill="white"
-                      />
-                    </svg>
-                    В избранные
-                  </div>
-                </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>

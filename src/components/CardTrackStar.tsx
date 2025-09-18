@@ -49,7 +49,6 @@ const CardTrackStar = observer(({ data }: any) => {
                 asset_url: data.asset_url,
               });
               store.setOnAir(false);
-              // store.setChannel_name("");
             }}
           >
             <img
@@ -59,7 +58,7 @@ const CardTrackStar = observer(({ data }: any) => {
                   ? "https://cdn-images.audioaddict.com/a/7/3/c/6/c/a73c6ccba5f077b956835714d7e3d9a8.png"
                   : data.asset_url + "?size=120x120&quality=90"
               }
-              alt=""
+              alt="cover"
             />
             <div className="pr-8 pl-4">
               <p className="text-white text-sm sm:text-xl">{data.track}</p>
@@ -73,8 +72,11 @@ const CardTrackStar = observer(({ data }: any) => {
           </div>
 
           <div
-            onClick={() => setViewItem(viewItem ? false : true)}
-            className="m-2 ml-6 cursor-pointer"
+            onClick={() => {
+              setViewItem(viewItem ? false : true);
+              setTimeout(() => setViewItem(false), 5000);
+            }}
+            className="relative p-2 m-2 ml-6 cursor-pointer"
           >
             <svg width="3" height="18" viewBox="0 0 4 24" fill="none">
               <path
@@ -90,59 +92,57 @@ const CardTrackStar = observer(({ data }: any) => {
                 fill="white"
               />
             </svg>
-          </div>
-          <div
-            onClick={() => setViewItem(viewItem ? false : true)}
-            className="absolute opacity-80"
-          >
-            {viewItem ? (
-              <div className="relative w-full p-4 bg-black cursor-pointer left-40">
-                <div
-                  onClick={() => downloadTrack()}
-                  className="text-white text-xl pb-2"
-                >
-                  <div className="flex items-center">
-                    <svg
-                      className="mr-2"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 16 16"
-                      fill="none"
-                    >
-                      <path
-                        d="M14 9V13.0003H2V9H0V15.0181H3.3536H16V11.4818V9H14Z"
-                        fill="white"
-                      />
-                      <path
-                        d="M6.33233 9.81408L7.99982 11.4819L10.9188 8.56259L13.004 6.47764H13.0026H9V0.492188H7V6.47764H2.99561L6.33233 9.81408Z"
-                        fill="white"
-                      />
-                    </svg>
-                    Скачать
+            <div
+              onClick={() => setViewItem(viewItem ? false : true)}
+              className="opacity-80"
+            >
+              {viewItem && (
+                <div className="absolute top-0 right-6 p-4 bg-black cursor-pointer">
+                  <div
+                    onClick={() => downloadTrack()}
+                    className="text-white text-xl pb-2"
+                  >
+                    <div className="flex items-center">
+                      <svg
+                        className="mr-2"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 16 16"
+                        fill="none"
+                      >
+                        <path
+                          d="M14 9V13.0003H2V9H0V15.0181H3.3536H16V11.4818V9H14Z"
+                          fill="white"
+                        />
+                        <path
+                          d="M6.33233 9.81408L7.99982 11.4819L10.9188 8.56259L13.004 6.47764H13.0026H9V0.492188H7V6.47764H2.99561L6.33233 9.81408Z"
+                          fill="white"
+                        />
+                      </svg>
+                      Скачать
+                    </div>
+                  </div>
+                  <div
+                    onClick={() => removePlaylist()}
+                    className="text-white text-xl pb-2"
+                  >
+                    <div className="flex items-center">
+                      <svg
+                        className="mr-2"
+                        width="18"
+                        height="18"
+                        viewBox="0 0 18 18"
+                        fill="none"
+                      >
+                        <path d="M1 1L17 17" stroke="white" strokeWidth="2" />
+                        <path d="M17 1L1 17" stroke="white" strokeWidth="2" />
+                      </svg>
+                      Удалить
+                    </div>
                   </div>
                 </div>
-                <div
-                  onClick={() => removePlaylist()}
-                  className="text-white text-xl pb-2"
-                >
-                  <div className="flex items-center">
-                    <svg
-                      className="mr-2"
-                      width="18"
-                      height="18"
-                      viewBox="0 0 18 18"
-                      fill="none"
-                    >
-                      <path d="M1 1L17 17" stroke="white" strokeWidth="2" />
-                      <path d="M17 1L1 17" stroke="white" strokeWidth="2" />
-                    </svg>
-                    Удалить
-                  </div>
-                </div>
-              </div>
-            ) : (
-              ""
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>

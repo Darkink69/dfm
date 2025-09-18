@@ -189,28 +189,29 @@ const AllTracksOffline = observer(() => {
                   })}
                 </div>
               ) : (
-                <div className="relative top-6 text-center pt-4 text-white">
+                <div className="relative top-6 text-center pt-4 text-gray-400">
                   {input.length > 0 ? (
                     "Кажется такой артист или трек никогда не звучит на этом канале..."
                   ) : (
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 text-left grid-cols-1">
-                      {store.allTracksOfflineView
-                        ? showOfflineTracks?.map((item: any) => {
+                    <>
+                      <div className="grid sm:grid-cols-2 lg:grid-cols-3 text-left grid-cols-1">
+                        {store.allTracksOfflineView &&
+                          showOfflineTracks?.map((item: any) => {
                             return (
                               <CardTrackOffline data={item} key={item.id} />
                             );
-                          })
-                        : ""}
+                          })}
+                      </div>
                       <div
                         onClick={() => {
                           store.setSpinView("");
                           setShowTracks(showTracks + 30);
                         }}
-                        className="text-sky-400  pt-4 text-lg underline cursor-pointer"
+                        className="text-sky-400 pt-4 text-lg sm:text-xl text-left underline cursor-pointer"
                       >
                         {store.allTracksOfflineView ? "Показать еще" : ""}
                       </div>
-                    </div>
+                    </>
                   )}
                 </div>
               )}
