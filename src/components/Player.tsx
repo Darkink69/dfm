@@ -444,6 +444,7 @@ const Player = observer(() => {
 
   // находим текущий трек из всех существующих в треках с нашего storage и включаем
   useEffect(() => {
+    if (!isUpdate) return;
     store.setOnAir(true);
     const audio_data = String(localStorage.getItem("data")).slice(1, -1);
     let foundMatch = false;
@@ -484,11 +485,12 @@ const Player = observer(() => {
           setTimeout(() => {
             store.setSpinView("");
             getHistory(); // Запускаем обновление истории
-          }, 2000);
+          }, 4000);
         } else {
           console.log("Достигнут лимит попыток. Прекращаем проверку.");
           retryCountRef.current = 0; // Сбрасываем счетчик
-          getRandomTrack();
+          audioRef.current.audio.current.pause();
+          // getRandomTrack();
         }
       } else {
         // ID разные - сбрасываем счетчик и запоминаем новый ID
