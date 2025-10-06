@@ -353,7 +353,7 @@ const Player = observer(() => {
       });
   };
 
-  // включаем случайный трек с любого сайта и канала
+  // включаем случайный трек
   const getRandomTrack = () => {
     store.setSpinView("");
     store.setOnAir(false);
@@ -503,6 +503,7 @@ const Player = observer(() => {
     // Запасная функция getTracks, если на storage нет трека - обращаемся к официальному api
     if (!foundMatch && !getTracksCalledRef.current) {
       getTracks();
+      // getRandomTrack();
       console.log("Трек в storage не найден, переходим на официальное api");
       getTracksCalledRef.current = true;
     }

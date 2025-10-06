@@ -11,24 +11,21 @@ class Store {
   ];
   siteName = ["Electronic", "Rock", "Tunes", "Jazz", "Classical", "Zen"];
   network_ids = [1, 13, 2, 12, 15, 16];
-  currentSite = JSON.parse(localStorage.getItem("currentSite") || "0") || 0;
+  currentSite: any =
+    JSON.parse(localStorage.getItem("currentSite") || "2") || 2;
   channel_id: number =
-    JSON.parse(localStorage.getItem("channel_id") || "69") || 69;
-  channel_name = localStorage.getItem("channel_name") || "Classic EuroDance";
+    JSON.parse(localStorage.getItem("channel_id") || "422") || 422;
+  channel_name =
+    localStorage.getItem("channel_name") || "Chill & Tropical House";
   onlyChannelIds: any = [];
+  // onlyChannelIds: any = ["cc26102f6b3a03cf3c70b9665c0a5955"];
 
   premium = [
     "615841863e5533f627fa26bd6e921776",
     "055e654b1236dd686b31094e1c5495f2",
   ];
 
-  allTokens: any = [
-    "8885f1f3df43170c0eaaf16ce5ded0c2",
-    "7e938c7250620a6fa561a93e733224a3",
-    "1990f9af93b76a67f98b17c91bb5419e",
-    "5f83014c79ad672b674d5f8a9464bec4",
-  ];
-
+  allTokens: any = [];
   dataChannels = [];
   allStationsData = [{}];
   allChannelTracks: any = [];
@@ -101,8 +98,18 @@ class Store {
     this.currentPlaying = currentPlaying;
   }
 
+  setCurrentSite(currentSite: number) {
+    this.currentSite = currentSite;
+    this.switchChannel = false;
+    localStorage.setItem("currentSite", JSON.stringify(currentSite));
+
+    localStorage.setItem("currentSite", JSON.stringify(currentSite));
+  }
+
   setChannel_id(channel_id: number) {
     this.channel_id = channel_id;
+    localStorage.setItem("channel_id", JSON.stringify(channel_id));
+
     localStorage.setItem("channel_id", JSON.stringify(channel_id));
   }
 
@@ -114,6 +121,8 @@ class Store {
   setChannel_name(channel_name: string) {
     this.channel_name = channel_name;
     console.log(channel_name);
+    localStorage.setItem("channel_name", channel_name);
+
     localStorage.setItem("channel_name", channel_name);
   }
 
@@ -132,12 +141,6 @@ class Store {
 
   setSizePlayer(size: boolean) {
     this.bigPlayer = size;
-  }
-
-  setCurrentSite(currentSite: number) {
-    this.currentSite = currentSite;
-    this.switchChannel = false;
-    localStorage.setItem("currentSite", JSON.stringify(currentSite));
   }
 
   setSwitchChannel(view: boolean) {
