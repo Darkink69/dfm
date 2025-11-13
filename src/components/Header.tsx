@@ -140,8 +140,8 @@ const Header = observer(() => {
           </div>
         </div>
 
-        {store.switchChannel ? (
-          <div className="w-full h-[200px] bg-black opacity-90 animate-right">
+        {store.switchChannel && (
+          <div className="w-full h-[200px] bg-black opacity-90 animate-right z-50">
             <div className="grid grid-cols-2 justify-center p-8 text-2xl font-bold pb-4 cursor-pointer">
               <div
                 onClick={() => setSiteData(0, 69, "Classic EuroDance")}
@@ -209,8 +209,6 @@ const Header = observer(() => {
               </div>
             </div>
           </div>
-        ) : (
-          ""
         )}
       </div>
     </>

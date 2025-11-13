@@ -1,5 +1,3 @@
-import { Analytics } from "@vercel/analytics/react";
-// import { SpeedInsights } from "@vercel/speed-insights/react";
 import AllChannels from "./components/AllChannels";
 import AllTracksOffline from "./components/AllTracksOffline";
 import BlackBG from "./components/BlackBG";
@@ -19,44 +17,9 @@ import store from "./components/store";
 import { useEffect, useState } from "react";
 import Loader from "./components/Loader";
 
-// interface RoutineResponse {
-//   [key: string]: any;
-// }
-
 const App = observer(() => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [dataChannels, setDataChannels] = useState<any>({});
-
-  const fetchRoutineData = async () => {
-    // try {
-    //   const formData = new FormData();
-    //   formData.append("radio", "di");
-    //   formData.append("channel", "vocallounge");
-    //   formData.append("channel_id", "278");
-    //   formData.append("timestamp", Math.floor(Date.now() / 1000).toString());
-    //   const response = await fetch(
-    //     "https://radio.drgnv.ru/requests/get_routine_by_channel.php",
-    //     {
-    //       method: "POST",
-    //       body: formData,
-    //       mode: "cors",
-    //       credentials: "include",
-    //       headers: {
-    //         Cookie: "PHPSESSID=056d43e52946531eea44fee4b6c01f47; Path=/;",
-    //         "User-Agent":
-    //           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-    //       },
-    //     }
-    //   );
-    //   if (!response.ok) {
-    //     throw console.log(`HTTP error! status: ${response.status}`);
-    //   }
-    //   const data: RoutineResponse = await response.json();
-    //   console.log("Routine data:", data);
-    // } catch (error) {
-    //   console.error("Error fetching routine data:", error);
-    // }
-  };
 
   // запас audio_token на нашем storage
   const getAllTokens = () => {
@@ -167,7 +130,6 @@ const App = observer(() => {
   }, [dataChannels]);
 
   useEffect(() => {
-    fetchRoutineData();
     getAllTokens();
     getAllChannelTracks();
     const channelNames = JSON.parse(localStorage.getItem("ch") || "0");
@@ -180,9 +142,6 @@ const App = observer(() => {
 
   return (
     <>
-      <Analytics />
-      {/* <SpeedInsights /> */}
-
       {!isLoaded ? (
         <Loader />
       ) : (
@@ -209,7 +168,7 @@ const App = observer(() => {
               {/* <HamburgerMenu /> */}
             </div>
           </div>
-          <div className="z-50 fixed bottom-0 bg-black w-full h-[80px]">
+          <div className="z-40 fixed bottom-0 bg-black w-full h-[80px]">
             <Player />
           </div>
         </div>

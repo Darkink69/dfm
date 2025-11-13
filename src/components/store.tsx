@@ -12,11 +12,10 @@ class Store {
   siteName = ["Electronic", "Rock", "Tunes", "Jazz", "Classical", "Zen"];
   network_ids = [1, 13, 2, 12, 15, 16];
   currentSite: any =
-    JSON.parse(localStorage.getItem("currentSite") || "2") || 2;
+    JSON.parse(localStorage.getItem("currentSite") || "0") || 0;
   channel_id: number =
-    JSON.parse(localStorage.getItem("channel_id") || "422") || 422;
-  channel_name =
-    localStorage.getItem("channel_name") || "Chill & Tropical House";
+    JSON.parse(localStorage.getItem("channel_id") || "69") || 69;
+  channel_name = localStorage.getItem("channel_name") || "Classic EuroDance";
   onlyChannelIds: any = [];
   // onlyChannelIds: any = ["cc26102f6b3a03cf3c70b9665c0a5955"];
 
