@@ -1,8 +1,14 @@
 import { observer } from "mobx-react-lite";
-// import { useEffect, useState } from "react";
-// import store from "./store";
+import { useEffect, useState } from "react";
+import store from "./store";
 
 const Loader = observer(() => {
+  const [text, setText] = useState("Загрузка...");
+
+  useEffect(() => {
+    setText(store.message);
+  }, [store.message]);
+
   return (
     <>
       <div className="w-full h-screen bg-black flex items-center justify-center">
@@ -44,7 +50,7 @@ const Loader = observer(() => {
               />
             </g>
           </svg>
-          <div className="text-white text-center m-4">Загрузка трека...</div>
+          <div className="text-white text-center m-4">{text}</div>
         </div>
       </div>
     </>

@@ -35,6 +35,7 @@ const App = observer(() => {
         setAcсessData();
         console.error(error);
         console.log("Audio_token storage problem");
+        store.setMessage("Нет аудио-токенов для подключения");
       });
   };
 
@@ -60,6 +61,7 @@ const App = observer(() => {
       })
       .catch((error) => {
         console.error(error);
+        store.setMessage("Аудио-токен не подходит. Еще попытка...");
         console.log("Audio Token problem. We this one attempt again...");
         setTimeout(() => getAllTokens(), 10000);
       });
@@ -88,6 +90,7 @@ const App = observer(() => {
           });
         })
         .catch((error) => console.error(error));
+      store.setMessage("");
     });
   };
 
@@ -109,6 +112,7 @@ const App = observer(() => {
       })
       .catch((error) => {
         console.error("Не удалось получиться все треки со storage", error);
+        store.setMessage("Не удалось получиться все треки");
       });
   };
 

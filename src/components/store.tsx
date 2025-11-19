@@ -34,6 +34,8 @@ class Store {
     JSON.parse(localStorage.getItem("premium") || "false")
   );
 
+  message: string = "";
+
   // historyData = [];
 
   options = JSON.parse(
@@ -233,6 +235,10 @@ class Store {
 
   setServerError(err: boolean) {
     this.serverError = err;
+  }
+
+  setMessage(txt: string) {
+    this.message = txt;
   }
 }
 
