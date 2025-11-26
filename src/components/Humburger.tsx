@@ -9,6 +9,7 @@ const Menu = observer(() => {
   // const [sliderValue, setSliderValue] = useState(2);
   const [viewTipsRnd, setViewTipsRnd] = useState(false);
   const [viewTipsSwitch, setViewTipsSwitch] = useState(false);
+  const [viewTipsBot, setViewTipsBot] = useState(false);
 
   const labels = [
     { value: 1, text: "Выкл." },
@@ -101,7 +102,7 @@ const Menu = observer(() => {
                 <path d="M1 1L8 9L15 1" stroke="white" strokeWidth="2" />
               </svg>
             </div>
-            {viewOptions ? (
+            {viewOptions && (
               <div className="mb-6">
                 <div className="flex items-center justify-center mb-2">
                   <h3 className="text-white text-base pr-2">
@@ -224,9 +225,51 @@ const Menu = observer(() => {
                   </div>
                 </div>
               </div>
-            ) : (
-              ""
             )}
+
+            <div className="flex items-center justify-center mb-4 pt-4">
+              <h1 className="text-xl cursor-pointer pr-2">
+                <a href="https://t.me/myFmDi_bot" target="_blank">
+                  Скачать все треки mp3
+                </a>
+              </h1>
+              <div
+                className="cursor-pointer"
+                onClick={() => {
+                  setViewTipsBot(!viewTipsBot);
+                  setViewTipsSwitch(false);
+                  setViewTipsRnd(false);
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path
+                    d="M4.64258 5.70605C4.72005 4.81738 5.05273 4.11328 5.64062 3.59375C6.23307 3.06966 6.98275 2.80762 7.88965 2.80762C8.85124 2.80762 9.62826 3.0651 10.2207 3.58008C10.8132 4.09049 11.1094 4.74219 11.1094 5.53516C11.1094 5.98177 11.0068 6.39648 10.8018 6.7793C10.6012 7.16211 10.2207 7.58594 9.66016 8.05078C9.09961 8.51562 8.75553 8.88704 8.62793 9.16504C8.50033 9.43848 8.43652 9.89648 8.43652 10.5391H7.2334C7.2334 9.69141 7.33138 9.07161 7.52734 8.67969C7.72331 8.2832 8.08333 7.86165 8.60742 7.41504C9.13607 6.96842 9.46419 6.62663 9.5918 6.38965C9.7194 6.14811 9.7832 5.8929 9.7832 5.62402C9.7832 5.09993 9.61003 4.66927 9.26367 4.33203C8.91732 3.99023 8.46387 3.81934 7.90332 3.81934C6.80957 3.81934 6.16699 4.44824 5.97559 5.70605H4.64258ZM8.58008 13H7.17871V11.5986H8.58008V13Z"
+                    fill="#808080"
+                  />
+                  <circle
+                    cx="8"
+                    cy="8"
+                    r="7.25"
+                    stroke="#808080"
+                    strokeWidth="1.5"
+                  />
+                </svg>
+              </div>
+
+              {viewTipsBot && (
+                <div className="absolute w-[200px] p-4 bg-black cursor-pointer opacity-80">
+                  <div
+                    className="text-white text-base pb-2"
+                    onClick={() => setViewTipsBot(!viewTipsBot)}
+                  >
+                    <div className="flex items-center w-[200px]">
+                      Для этого вы будете перенаправлены в официальный
+                      телеграм-бот ДИ ФМ.
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
 
             <button
               className="bg-teal-600 text-white text-xl py-3 px-6 rounded-lg mt-auto mb-20 mx-auto w-full sm:w-1/4"
