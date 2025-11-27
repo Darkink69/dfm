@@ -73,7 +73,7 @@ const FavoriteChannels = observer(() => {
   useEffect(() => {
     if (store.favoriteChannels.channels_id.length === 0) {
       [69, 143, 186, 79].map((item: number) => {
-        store.setfavoriteChannels(item);
+        store.setFavoriteChannels(item);
       });
     }
 

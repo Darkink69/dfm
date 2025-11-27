@@ -1,7 +1,24 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, observable, action, computed } from "mobx";
+
+interface CurrentPlaying {
+  track: string;
+  url: string;
+  asset_url: string;
+}
+
+interface FavoriteChannels {
+  currentSite: number;
+  channels_id: number[];
+}
+
+interface Options {
+  shuffle: number;
+  favChannels: number;
+}
 
 class Store {
-  sites = [
+  // Site configuration
+  @observable sites = [
     "di",
     "rockradio",
     "radiotunes",
@@ -9,236 +26,293 @@ class Store {
     "classicalradio",
     "zenradio",
   ];
-  siteName = ["Electronic", "Rock", "Tunes", "Jazz", "Classical", "Zen"];
-  network_ids = [1, 13, 2, 12, 15, 16];
-  currentSite: any =
-    JSON.parse(localStorage.getItem("currentSite") || "0") || 0;
-  channel_id: number =
-    JSON.parse(localStorage.getItem("channel_id") || "69") || 69;
-  channel_name = localStorage.getItem("channel_name") || "Classic EuroDance";
-  onlyChannelIds: any = [];
-  // onlyChannelIds: any = ["cc26102f6b3a03cf3c70b9665c0a5955"];
-
-  premium = [
+  
+  @observable siteName = ["Electronic", "Rock", "Tunes", "Jazz", "Classical", "Zen"];
+  @observable network_ids = [1, 13, 2, 12, 15, 16];
+  
+  // Current session data
+  @observable currentSite: number = this.getStoredValue("currentSite", 0);
+  @observable channel_id: number = this.getStoredValue("channel_id", 69);
+  @observable channel_name: string = localStorage.getItem("channel_name") || "Classic EuroDance";
+  
+  // Configuration
+  @observable onlyChannelIds: string[] = [];
+  @observable premium = [
     "615841863e5533f627fa26bd6e921776",
     "055e654b1236dd686b31094e1c5495f2",
   ];
-
-  allTokens: any = [];
-  dataChannels = [];
-  allStationsData = [{}];
-  allChannelTracks: any = [];
-  allStationsDataLoaded = false;
-  removeStarTrack = false;
-  bitratePremium = Boolean(
-    JSON.parse(localStorage.getItem("premium") || "false")
-  );
-
-  message: string = "";
-
-  // historyData = [];
-
-  options = JSON.parse(
-    localStorage.getItem("options") || '{"shuffle":2,"favChannels":1}'
-  );
-  countPlayingTracks = 0;
-  minMax = [
+  
+  // Data storage
+  @observable allTokens: any[] = [];
+  @observable dataChannels: any[] = [];
+  @observable allStationsData: any[] = [{}];
+  @observable allChannelTracks: any[] = [];
+  @observable allStationsDataLoaded = false;
+  @observable removeStarTrack = false;
+  @observable bitratePremium = this.getStoredValue("premium", false);
+  
+  @observable message: string = "";
+  
+  // Options
+  @observable options: Options = this.getStoredObject("options", { shuffle: 2, favChannels: 1 });
+  @observable countPlayingTracks = 0;
+  @observable minMax = [
     [0, 0],
     [7, 11],
     [2, 6],
     [1, 1],
   ];
-
-  bigPlayer = true;
-  allFavChannelsView = true;
-  allChannelsView = false;
-  allTracksOfflineView = false;
-  allStarTracksView = false;
-  searchView = false;
-  menuView = false;
-  historyView = false;
-  serverError = false;
-
-  spinView = "";
-
-  currentPlaying = {
+  
+  // View states
+  @observable bigPlayer = true;
+  @observable allFavChannelsView = true;
+  @observable allChannelsView = false;
+  @observable allTracksOfflineView = false;
+  @observable allStarTracksView = false;
+  @observable searchView = false;
+  @observable menuView = false;
+  @observable historyView = false;
+  @observable serverError = false;
+  
+  @observable spinView = "";
+  
+  // Current playing track
+  @observable currentPlaying: CurrentPlaying = {
     track: "",
     url: "",
     asset_url: "",
   };
-  allStationsNames = [{}];
-  allStationIds: any = [];
-
-  favNamesSites: any = [];
-
-  favoriteChannels = {
+  
+  // Station data
+  @observable allStationsNames: any[] = [{}];
+  @observable allStationIds: number[] = [];
+  @observable favNamesSites: any[] = [];
+  
+  // Favorites
+  @observable favoriteChannels: FavoriteChannels = {
     currentSite: 0,
-    channels_id: JSON.parse(localStorage.getItem("favoriteChannels") || "[]"),
+    channels_id: this.getStoredObject("favoriteChannels", []),
   };
-
-  onAir = false;
-  switchChannel = false;
+  
+  // Status flags
+  @observable onAir = false;
+  @observable switchChannel = false;
 
   constructor() {
     makeAutoObservable(this);
   }
 
-  setAllTokens(allTokens: any) {
+  // Helper methods for localStorage
+  private getStoredValue(key: string, defaultValue: any): any {
+    try {
+      const stored = localStorage.getItem(key);
+      return stored ? JSON.parse(stored) : defaultValue;
+    } catch (e) {
+      console.warn(`Error parsing localStorage item "${key}":`, e);
+      return defaultValue;
+    }
+  }
+
+  private getStoredObject<T>(key: string, defaultValue: T): T {
+    try {
+      const stored = localStorage.getItem(key);
+      return stored ? JSON.parse(stored) : defaultValue;
+    } catch (e) {
+      console.warn(`Error parsing localStorage object "${key}":`, e);
+      return defaultValue;
+    }
+  }
+
+  private setStoredValue(key: string, value: any): void {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch (e) {
+      console.error(`Error storing value in localStorage for key "${key}":`, e);
+    }
+  }
+
+  // Actions
+  @action setAllTokens(allTokens: any[]) {
     this.allTokens = allTokens;
   }
 
-  setAllChannelTracks(allChannelTracks: any) {
+  @action setAllChannelTracks(allChannelTracks: any[]) {
     this.allChannelTracks = allChannelTracks;
   }
 
-  setCurrentPlaying(currentPlaying: {
-    track: string;
-    url: string;
-    asset_url: string;
-  }) {
+  @action setCurrentPlaying(currentPlaying: CurrentPlaying) {
     this.currentPlaying = currentPlaying;
   }
 
-  setCurrentSite(currentSite: number) {
+  @action setCurrentSite(currentSite: number) {
     this.currentSite = currentSite;
     this.switchChannel = false;
-    localStorage.setItem("currentSite", JSON.stringify(currentSite));
-
-    localStorage.setItem("currentSite", JSON.stringify(currentSite));
+    this.setStoredValue("currentSite", currentSite);
   }
 
-  setChannel_id(channel_id: number) {
+  @action setChannel_id(channel_id: number) {
     this.channel_id = channel_id;
-    localStorage.setItem("channel_id", JSON.stringify(channel_id));
-
-    localStorage.setItem("channel_id", JSON.stringify(channel_id));
+    this.setStoredValue("channel_id", channel_id);
   }
 
-  setAllStationsData(data: any) {
+  @action setAllStationsData(data: any[]) {
     this.allStationsData = data;
-    // console.log(this.allStationsData);
   }
 
-  setChannel_name(channel_name: string) {
+  @action setChannel_name(channel_name: string) {
     this.channel_name = channel_name;
-    console.log(channel_name);
-    localStorage.setItem("channel_name", channel_name);
-
+    console.log(channel_name); // Consider removing this in production
     localStorage.setItem("channel_name", channel_name);
   }
 
-  setAllStationsNames(allNames: { id: number; name: string }[]) {
+  @action setAllStationsNames(allNames: { id: number; name: string }[]) {
     this.allStationsNames = allNames;
   }
 
-  setAllStationIds(ids: { id: number }[]) {
-    this.allStationIds = ids;
-    // console.log(this.allStationIds);
+  @action setAllStationIds(ids: { id: number }[]) {
+    this.allStationIds = ids.map(item => item.id);
   }
 
-  setAllStationsDataLoaded(loaded: boolean) {
+  @action setAllStationsDataLoaded(loaded: boolean) {
     this.allStationsDataLoaded = loaded;
   }
 
-  setSizePlayer(size: boolean) {
+  @action setSizePlayer(size: boolean) {
     this.bigPlayer = size;
   }
 
-  setSwitchChannel(view: boolean) {
+  @action setSwitchChannel(view: boolean) {
     this.switchChannel = view;
   }
 
-  setAllFavChannelsView(view: boolean) {
+  @action setAllFavChannelsView(view: boolean) {
     this.allFavChannelsView = view;
   }
 
-  setAllChannelsView(view: boolean) {
+  @action setAllChannelsView(view: boolean) {
     this.allChannelsView = view;
   }
 
-  setAllTracksOfflineView(view: boolean) {
+  @action setAllTracksOfflineView(view: boolean) {
     this.allTracksOfflineView = view;
   }
 
-  setAllStarTracksView(view: boolean) {
+  @action setAllStarTracksView(view: boolean) {
     this.allStarTracksView = view;
   }
 
-  setOnAir(air: boolean) {
+  @action setOnAir(air: boolean) {
     this.onAir = air;
   }
 
-  setSpinView(view: string) {
+  @action setSpinView(view: string) {
     this.spinView = view;
   }
 
-  setFavNamesSites(sites: any[]) {
+  @action setFavNamesSites(sites: any[]) {
     this.favNamesSites = sites;
   }
 
-  setRemoveStarTrack(remove: boolean) {
+  @action setRemoveStarTrack(remove: boolean) {
     this.removeStarTrack = remove;
   }
 
-  setfavoriteChannels(id: number) {
-    if (this.favoriteChannels.channels_id.includes(id)) {
-      for (
-        let i = 0, len = this.favoriteChannels.channels_id.length;
-        i < len;
-        i++
-      ) {
-        if (this.favoriteChannels.channels_id[i] === id) {
-          this.favoriteChannels.channels_id.splice(i, 1);
-          break;
-        }
-      }
+  @action setFavoriteChannels(id: number) {
+    const channels = this.favoriteChannels.channels_id;
+    const index = channels.indexOf(id);
+    
+    if (index !== -1) {
+      channels.splice(index, 1);
     } else {
-      this.favoriteChannels.channels_id.push(id);
+      channels.push(id);
     }
-    localStorage.setItem(
-      "favoriteChannels",
-      JSON.stringify(this.favoriteChannels.channels_id)
-    );
+    
+    this.setStoredValue("favoriteChannels", channels);
     this.allFavChannelsView = false;
   }
 
-  setOptions(shuffle: number) {
+  @action setOptions(shuffle: number) {
     this.options.shuffle = shuffle;
-    localStorage.setItem("options", JSON.stringify(this.options));
+    this.setStoredValue("options", this.options);
   }
 
-  setCountPlayingTracks(count: number) {
+  @action setCountPlayingTracks(count: number) {
     this.countPlayingTracks = count;
   }
 
-  setSearchView(view: boolean) {
+  @action setSearchView(view: boolean) {
     this.searchView = view;
   }
 
-  setMenuView(view: boolean) {
+  @action setMenuView(view: boolean) {
     this.menuView = view;
   }
 
-  // setHistoryData(data: any) {
-  //   this.historyData = data;
-  // }
-
-  setHistoryView(view: boolean) {
+  @action setHistoryView(view: boolean) {
     this.historyView = view;
   }
 
-  setBitratePremium(bit: boolean) {
+  @action setBitratePremium(bit: boolean) {
     this.bitratePremium = bit;
     localStorage.setItem("premium", String(bit));
+    // Consider using a more elegant approach than location.reload()
     location.reload();
   }
 
-  setServerError(err: boolean) {
+  @action setServerError(err: boolean) {
     this.serverError = err;
   }
 
-  setMessage(txt: string) {
+  @action setMessage(txt: string) {
     this.message = txt;
+  }
+
+  // Computed values
+  @computed get isCurrentChannelFavorite(): boolean {
+    return this.favoriteChannels.channels_id.includes(this.channel_id);
+  }
+
+  @computed get currentSiteName(): string {
+    return this.siteName[this.currentSite] || this.siteName[0];
+  }
+
+  @computed get currentNetworkId(): number {
+    return this.network_ids[this.currentSite] || this.network_ids[0];
+  }
+
+  @computed get favoriteChannelsCount(): number {
+    return this.favoriteChannels.channels_id.length;
+  }
+
+  // Utility methods
+  clearAllData(): void {
+    this.allTokens = [];
+    this.allStationsData = [{}];
+    this.allChannelTracks = [];
+    this.allStationsDataLoaded = false;
+    this.countPlayingTracks = 0;
+    this.currentPlaying = {
+      track: "",
+      url: "",
+      asset_url: "",
+    };
+  }
+
+  resetToDefaults(): void {
+    this.clearAllData();
+    this.currentSite = 0;
+    this.channel_id = 69;
+    this.channel_name = "Classic EuroDance";
+    this.bitratePremium = false;
+    this.favoriteChannels.channels_id = [];
+    
+    // Clear localStorage
+    localStorage.removeItem("currentSite");
+    localStorage.removeItem("channel_id");
+    localStorage.removeItem("channel_name");
+    localStorage.removeItem("premium");
+    localStorage.removeItem("favoriteChannels");
+    localStorage.removeItem("options");
   }
 }
 

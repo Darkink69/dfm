@@ -712,7 +712,7 @@ const Player = observer(() => {
                 <div
                   className="z-30 absolute top-10 right-10 cursor-pointer"
                   onClick={() => {
-                    store.setfavoriteChannels(store.channel_id);
+                    store.setFavoriteChannels(store.channel_id);
                   }}
                   title="Убрать из любимых каналов"
                 >
@@ -727,7 +727,7 @@ const Player = observer(() => {
                 <div
                   className="z-30 absolute top-10 right-10 cursor-pointer"
                   onClick={() => {
-                    store.setfavoriteChannels(store.channel_id);
+                    store.setFavoriteChannels(store.channel_id);
                     setIsFav(true);
                     setTimeout(() => setIsFav(false), 2000);
                   }}
