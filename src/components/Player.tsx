@@ -354,18 +354,22 @@ const Player = observer(() => {
   };
 
   // включаем случайный трек
-  const getRandomTrack = () => {
+  const getRandomTrack = async () => {
     store.setSpinView("");
     store.setOnAir(false);
     const audio_data = String(localStorage.getItem("data")).slice(1, -1);
 
     const rndTrack = Math.floor(Math.random() * store.allChannelTracks.length);
 
-    store.setCurrentPlaying({
-      track: store.allChannelTracks[rndTrack].track,
-      url: `https:${store.allChannelTracks[rndTrack].url}?${audio_data}`,
-      asset_url: store.allChannelTracks[rndTrack].asset_url,
-    });
+    try {
+      await store.setCurrentPlaying({
+        track: store.allChannelTracks[rndTrack].track,
+        url: `https:${store.allChannelTracks[rndTrack].url}?${audio_data}`,
+        asset_url: store.allChannelTracks[rndTrack].asset_url,
+      });
+    } catch (error) {
+      console.error("Error setting current playing track:", error);
+    }
   };
 
   // добавляем текущий трек в Избранное (playlist)
@@ -405,18 +409,25 @@ const Player = observer(() => {
 
   // включаем из 5 текущих треков официального api, тот, который должен играть сейчас
   useEffect(() => {
-    dataTrack?.map((item: any) => {
-      if (currentTrackId === item.id) {
-        store.setCurrentPlaying({
-          track: item.track,
-          url: "https:" + item.content.assets[0].url,
-          asset_url: "https:" + item.asset_url,
-        });
+    (async () => {
+      for (const item of dataTrack || []) {
+        if (currentTrackId === item.id) {
+          try {
+            await store.setCurrentPlaying({
+              track: item.track,
+              url: "https:" + item.content.assets[0].url,
+              asset_url: "https:" + item.asset_url,
+            });
+          } catch (error) {
+            console.error("Error setting current playing track:", error);
+          }
+          break;
+        }
       }
-    });
+    })();
     // audioRef.current?.setJumpTime(300);
     // audioRef.current?.setJumpTime(currentTimePlay);
-  }, [dataTrack]);
+  }, [dataTrack, currentTrackId]);
 
   // находим время, сколько осталось до конца звучания текущего трека (пока не используется)
   useEffect(() => {
@@ -449,24 +460,31 @@ const Player = observer(() => {
     const audio_data = String(localStorage.getItem("data")).slice(1, -1);
     let foundMatch = false;
     let currentTrackId: number | null = null;
-    Object.values(dataHistory).map((item: any) => {
-      if (item.channel_id === store.channel_id) {
-        store.allChannelTracks.map((i: any) => {
-          if (item.track_id === i.id) {
-            console.log(i.id, "наш!");
-            currentTrackId = i.id; // Запоминаем текущий ID
-            store.setCurrentPlaying({
-              track: i.track,
-              url: `https:${i.url}?${audio_data}`,
-              asset_url: "https:" + i.asset_url,
-            });
-            setIsUpdate(false);
-            foundMatch = true;
-            return;
+    
+    (async () => {
+      for (const item of Object.values(dataHistory)) {
+        if (item.channel_id === store.channel_id) {
+          for (const i of store.allChannelTracks) {
+            if (item.track_id === i.id) {
+              console.log(i.id, "наш!");
+              currentTrackId = i.id; // Запоминаем текущий ID
+              try {
+                await store.setCurrentPlaying({
+                  track: i.track,
+                  url: `https:${i.url}?${audio_data}`,
+                  asset_url: "https:" + i.asset_url,
+                });
+              } catch (error) {
+                console.error("Error setting current playing track:", error);
+              }
+              setIsUpdate(false);
+              foundMatch = true;
+              return;
+            }
           }
-        });
+        }
       }
-    });
+    })();
 
     // Если нашли совпадение и есть текущий ID
     if (foundMatch && currentTrackId !== null) {
@@ -712,7 +730,7 @@ const Player = observer(() => {
                 <div
                   className="z-30 absolute top-10 right-10 cursor-pointer"
                   onClick={() => {
-                    store.setfavoriteChannels(store.channel_id);
+                    store.setFavoriteChannels(store.channel_id);
                   }}
                   title="Убрать из любимых каналов"
                 >
@@ -727,7 +745,7 @@ const Player = observer(() => {
                 <div
                   className="z-30 absolute top-10 right-10 cursor-pointer"
                   onClick={() => {
-                    store.setfavoriteChannels(store.channel_id);
+                    store.setFavoriteChannels(store.channel_id);
                     setIsFav(true);
                     setTimeout(() => setIsFav(false), 2000);
                   }}
