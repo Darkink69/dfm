@@ -26,7 +26,10 @@ const FavoriteChannels = observer(() => {
 
     const resultCh: any = [];
     sites.map((item: any) => {
-      fetch(`https://api.audioaddict.com/v1/${item}/track_history.json`)
+      fetch(
+        `https://voltron-two.vercel.app/get_url?url=https://api.audioaddict.com/v1/${item}/track_history.json`
+      )
+        // fetch(`https://api.audioaddict.com/v1/${item}/track_history.json`)
         .then((response) => response.json())
         .then((data) => {
           Object.values(data).map((item: any) => {

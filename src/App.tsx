@@ -24,7 +24,8 @@ const App = observer(() => {
   // запас audio_token на нашем storage
   const getAllTokens = () => {
     fetch(
-      `https://qh8bsvaksadb2kj9.public.blob.vercel-storage.com/audio/audio.json`
+      `https://voltron-two.vercel.app/get_url?url=https://qh8bsvaksadb2kj9.public.blob.vercel-storage.com/audio/audio.json`
+      // `https://qh8bsvaksadb2kj9.public.blob.vercel-storage.com/audio/audio.json`
     )
       .then((response) => response.json())
       .then((data) => {
@@ -43,14 +44,19 @@ const App = observer(() => {
   const getAcсessData = () => {
     const rndToken =
       store.allTokens[Math.floor(Math.random() * store.allTokens.length)];
-    const ts = Date.now();
+    // const ts = Date.now();
     fetch(
-      `https://api.audioaddict.com/v1/${
+      `https://voltron-two.vercel.app/di/get_tracks?site=${
         store.sites[store.currentSite]
-      }/routines/channel/${
-        store.channel_id
-      }?tune_in=true&audio_token=${rndToken}&_=${ts}`
+      }&channel=${store.channel_id}&token=${rndToken}`
     )
+      // fetch(
+      //   `https://api.audioaddict.com/v1/${
+      //     store.sites[store.currentSite]
+      //   }/routines/channel/${
+      //     store.channel_id
+      //   }?tune_in=true&audio_token=${rndToken}&_=${ts}`
+      // )
       .then((response) => response.json())
       .then((data) => {
         localStorage.setItem(
@@ -75,7 +81,10 @@ const App = observer(() => {
   const getChannels = () => {
     const infoCh: any = [];
     store.sites.map((item: any) => {
-      fetch(`https://api.audioaddict.com/v1/${item}/channels.json`)
+      fetch(
+        `https://voltron-two.vercel.app/get_url?url=https://api.audioaddict.com/v1/${item}/channels.json`
+      )
+        // fetch(`https://api.audioaddict.com/v1/${item}/channels.json`)
         .then((response) => response.json())
         .then((data) => {
           Object.values(data).map((i: any) => {
@@ -98,12 +107,19 @@ const App = observer(() => {
   const getAllChannelTracks = () => {
     const premium = store.bitratePremium ? "premium_" : "";
     fetch(
-      `https://qh8bsvaksadb2kj9.public.blob.vercel-storage.com/${
+      `https://voltron-two.vercel.app/get_url?url=https://qh8bsvaksadb2kj9.public.blob.vercel-storage.com/${
         store.sites[store.currentSite]
       }/db_${store.sites[store.currentSite]}_full_${
         store.channel_id
       }_${premium}light.json`
     )
+      // fetch(
+      //   `https://qh8bsvaksadb2kj9.public.blob.vercel-storage.com/${
+      //     store.sites[store.currentSite]
+      //   }/db_${store.sites[store.currentSite]}_full_${
+      //     store.channel_id
+      //   }_${premium}light.json`
+      // )
       .then((response) => response.json())
       .then((data) => {
         {

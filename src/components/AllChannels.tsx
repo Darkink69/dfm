@@ -10,10 +10,15 @@ const AllChannels = observer(() => {
 
   const getAllChannels = () => {
     fetch(
-      `https://api.audioaddict.com/v1/${
+      `https://voltron-two.vercel.app/get_url?url=https://api.audioaddict.com/v1/${
         store.sites[store.currentSite]
       }/track_history.json`
     )
+      // fetch(
+      //   `https://api.audioaddict.com/v1/${
+      //     store.sites[store.currentSite]
+      //   }/track_history.json`
+      // )
       .then((response) => response.json())
       .then((data) => setAllChannels(data))
       .catch((error) => console.error(error));

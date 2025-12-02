@@ -203,14 +203,19 @@ const Player = observer(() => {
   const getTracks = () => {
     const audio_token =
       store.allTokens[Math.floor(Math.random() * store.allTokens.length)];
-    const ts = Date.now();
+    // const ts = Date.now();
     fetch(
-      `https://api.audioaddict.com/v1/${
+      `https://voltron-two.vercel.app/di/get_tracks?site=${
         store.sites[store.currentSite]
-      }/routines/channel/${
-        store.channel_id
-      }?tune_in=true&audio_token=${audio_token}&_=${ts}`
+      }&channel=${store.channel_id}&token=${audio_token}`
     )
+      // fetch(
+      //   `https://api.audioaddict.com/v1/${
+      //     store.sites[store.currentSite]
+      //   }/routines/channel/${
+      //     store.channel_id
+      //   }?tune_in=true&audio_token=${audio_token}&_=${ts}`
+      // )
       .then((response) => response.json())
       .then((data) => setDataTrack(data.tracks))
       .catch((error) => {
@@ -224,10 +229,15 @@ const Player = observer(() => {
   // получаем все текущие треки всех каналов сайта c официального api
   const getHistory = () => {
     fetch(
-      `https://api.audioaddict.com/v1/${
+      `https://voltron-two.vercel.app/get_url?url=https://api.audioaddict.com/v1/${
         store.sites[store.currentSite]
       }/track_history.json`
     )
+      // fetch(
+      //   `https://api.audioaddict.com/v1/${
+      //     store.sites[store.currentSite]
+      //   }/track_history.json`
+      // )
       .then((response) => response.json())
       .then((data) => {
         setDataHistory(data);
@@ -335,12 +345,19 @@ const Player = observer(() => {
   const getAllChannelTracks = () => {
     const premium = store.bitratePremium ? "premium_" : "";
     fetch(
-      `https://qh8bsvaksadb2kj9.public.blob.vercel-storage.com/${
+      `https://voltron-two.vercel.app/get_url?url=https://qh8bsvaksadb2kj9.public.blob.vercel-storage.com/${
         store.sites[store.currentSite]
       }/db_${store.sites[store.currentSite]}_full_${
         store.channel_id
       }_${premium}light.json`
     )
+      // fetch(
+      //   `https://qh8bsvaksadb2kj9.public.blob.vercel-storage.com/${
+      //     store.sites[store.currentSite]
+      //   }/db_${store.sites[store.currentSite]}_full_${
+      //     store.channel_id
+      //   }_${premium}light.json`
+      // )
       .then((response) => response.json())
       .then((data) => {
         {

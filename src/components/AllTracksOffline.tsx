@@ -15,12 +15,19 @@ const AllTracksOffline = observer(() => {
   const getAllChannelTracks = () => {
     const premium = store.bitratePremium ? "premium_" : "";
     fetch(
-      `https://qh8bsvaksadb2kj9.public.blob.vercel-storage.com/${
+      `https://voltron-two.vercel.app/get_url?url=https://qh8bsvaksadb2kj9.public.blob.vercel-storage.com/${
         store.sites[store.currentSite]
       }/db_${store.sites[store.currentSite]}_full_${
         store.channel_id
       }_${premium}light.json`
     )
+      // fetch(
+      //   `https://qh8bsvaksadb2kj9.public.blob.vercel-storage.com/${
+      //     store.sites[store.currentSite]
+      //   }/db_${store.sites[store.currentSite]}_full_${
+      //     store.channel_id
+      //   }_${premium}light.json`
+      // )
       .then((response) => response.json())
       .then((data) => {
         setAllChannelTracks(data.sort(() => Math.random() - 0.5));

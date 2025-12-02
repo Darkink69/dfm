@@ -63,7 +63,7 @@ class Store {
 
   currentPlaying = {
     track: "",
-    url: "",
+    url: "http://77.110.111.107/files/0a36c9c085b4331044de1aca9555d252e3c.mp3",
     asset_url: "",
   };
   allStationsNames = [{}];
@@ -91,12 +91,40 @@ class Store {
     this.allChannelTracks = allChannelTracks;
   }
 
-  setCurrentPlaying(currentPlaying: {
+  // setCurrentPlaying(currentPlaying: {
+  //   track: string;
+  //   url: string;
+  //   asset_url: string;
+  // }) {
+  //   this.currentPlaying = currentPlaying;
+  // }
+
+  async setCurrentPlaying(currentPlaying: {
     track: string;
     url: string;
     asset_url: string;
   }) {
-    this.currentPlaying = currentPlaying;
+    try {
+      const response = await fetch(
+        `http://77.110.111.107/save?url=${currentPlaying.url}`
+      );
+      const data = await response.json();
+
+      if (data.success && data.urls && data.urls.direct) {
+        // Update the currentPlaying with the direct URL from the response
+        this.currentPlaying = {
+          ...currentPlaying,
+          url: `http://77.110.111.107${data.urls.direct}`,
+        };
+      } else {
+        // If the request fails or doesn't return the expected format, use the original URL
+        this.currentPlaying = currentPlaying;
+      }
+    } catch (error) {
+      console.error("Error saving URL:", error);
+      // If there's an error, use the original URL
+      this.currentPlaying = currentPlaying;
+    }
   }
 
   setCurrentSite(currentSite: number) {
