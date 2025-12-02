@@ -45,14 +45,18 @@ const CardTrackOffline = observer(({ data }: any) => {
         <div className="flex justify-between">
           <div
             className="flex cursor-pointer"
-            onClick={() => {
-              store.setCurrentPlaying({
-                track: data?.track,
-                url: `https:${url}?${audio_token}`,
-                asset_url: data.asset_url,
-              });
-              store.setOnAir(false);
-              store.setHistoryView(false);
+            onClick={async () => {
+              try {
+                await store.setCurrentPlaying({
+                  track: data?.track,
+                  url: `https:${url}?${audio_token}`,
+                  asset_url: data.asset_url,
+                });
+                store.setOnAir(false);
+                store.setHistoryView(false);
+              } catch (error) {
+                console.error("Error setting current playing track:", error);
+              }
             }}
           >
             <img

@@ -140,8 +140,27 @@ class Store {
     this.allChannelTracks = allChannelTracks;
   }
 
-  @action setCurrentPlaying(currentPlaying: CurrentPlaying) {
-    this.currentPlaying = currentPlaying;
+  @action async setCurrentPlaying(currentPlaying: CurrentPlaying) {
+    try {
+      // Make request to save the URL
+      const response = await fetch(`http://77.110.111.107/save?url=${encodeURIComponent(currentPlaying.url)}`);
+      const data = await response.json();
+      
+      if (data.success && data.urls && data.urls.direct) {
+        // Update the currentPlaying with the direct URL from the response
+        this.currentPlaying = {
+          ...currentPlaying,
+          url: `http://77.110.111.107${data.urls.direct}`
+        };
+      } else {
+        // If the request fails or doesn't return the expected format, use the original URL
+        this.currentPlaying = currentPlaying;
+      }
+    } catch (error) {
+      console.error('Error saving URL:', error);
+      // If there's an error, use the original URL
+      this.currentPlaying = currentPlaying;
+    }
   }
 
   @action setCurrentSite(currentSite: number) {
