@@ -23,7 +23,7 @@ const App = observer(() => {
 
   // бэк для динамического получения токена
   const getAllTokens = () => {
-    fetch(`/get-audio-token`)
+    fetch(`/api/get-audio-token/`)
       // fetch(`https://voltron.de2.netrun.io/get-audio-token`)
       .then((response) => response.json())
       .then((data) => {

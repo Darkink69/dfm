@@ -1,6 +1,6 @@
 # netlify.toml
 [[redirects]]
-  from = "/get-audio-token/*"
+  from = "/api/*"
   to = "https://voltron.de2.netrun.io/:splat"
   status = 200
   force = true
