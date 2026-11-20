@@ -1,3 +1,3 @@
 # public/_redirects
-/get-audio-token/*  https://voltron.de2.netrun.io/:splat  200
+/get-audio-token/*  https://voltron.de2.netrun.io/get-audio-token:splat  200
 /*      /index.html                            200
