@@ -1,12 +1,10 @@
 import store from "./store";
 import { observer } from "mobx-react-lite";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 // import HamburgerMenu from "./HamburgerMenu";
 
 const Menu = observer(() => {
-  // const [os, setOs] = useState("");
   const [viewOptions, setViewOptions] = useState(true);
-  // const [sliderValue, setSliderValue] = useState(2);
   const [viewTipsRnd, setViewTipsRnd] = useState(false);
   const [viewTipsSwitch, setViewTipsSwitch] = useState(false);
   const [viewTipsBot, setViewTipsBot] = useState(false);
@@ -28,16 +26,6 @@ const Menu = observer(() => {
     store.setSizePlayer(true);
     store.setChannel_name(rndChannel.name);
   };
-
-  useEffect(() => {
-    // const os = navigator.userAgent;
-    // if (os.includes("Android")) {
-    //   setOs("Android");
-    // }
-    // if (os.includes("iPhone") || os.includes("iPad")) {
-    //   setOs("iPhone");
-    // }
-  }, []);
 
   return (
     <>
@@ -229,7 +217,7 @@ const Menu = observer(() => {
 
             <div className="flex items-center justify-center mb-4 pt-4">
               <h1 className="text-xl cursor-pointer pr-2">
-                <a href="https://t.me/myFmDi_bot" target="_blank">
+                <a href="" target="_blank">
                   Скачать все треки mp3
                 </a>
               </h1>

@@ -16,7 +16,7 @@ const FavoriteChannels = observer(() => {
       if (store.favoriteChannels.channels_id.includes(item.id)) {
         if (
           !sites.includes(
-            store.sites[store.network_ids.indexOf(item.network_id)]
+            store.sites[store.network_ids.indexOf(item.network_id)],
           )
         ) {
           sites.push(store.sites[store.network_ids.indexOf(item.network_id)]);
@@ -26,10 +26,8 @@ const FavoriteChannels = observer(() => {
 
     const resultCh: any = [];
     sites.map((item: any) => {
-      fetch(
-        `https://voltron-two.vercel.app/get_url?url=https://api.audioaddict.com/v1/${item}/track_history.json`
-      )
-        // fetch(`https://api.audioaddict.com/v1/${item}/track_history.json`)
+      fetch;
+      fetch(`https://api.audioaddict.com/v1/${item}/track_history.json`)
         .then((response) => response.json())
         .then((data) => {
           Object.values(data).map((item: any) => {

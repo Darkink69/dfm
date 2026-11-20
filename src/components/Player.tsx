@@ -26,7 +26,7 @@ const Player = observer(() => {
   const previousTrackIdRef = useRef<number | null>(null);
   const retryCountRef = useRef(0);
   const endPlayingRef = useRef(false);
-  const maxRetries = 15; // Максимальное количество попыток
+  const maxRetries = 5; // Максимальное количество попыток
 
   const textRef = useRef<HTMLParagraphElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
@@ -203,19 +203,19 @@ const Player = observer(() => {
   const getTracks = () => {
     const audio_token =
       store.allTokens[Math.floor(Math.random() * store.allTokens.length)];
-    // const ts = Date.now();
+    const ts = Date.now();
+    // fetch(
+    //   `https://voltron.de2.netrun.io/di/get_tracks?site=${
+    //     store.sites[store.currentSite]
+    //   }&channel=${store.channel_id}&token=${audio_token}`,
+    // )
     fetch(
-      `https://voltron-two.vercel.app/di/get_tracks?site=${
+      `https://api.audioaddict.com/v1/${
         store.sites[store.currentSite]
-      }&channel=${store.channel_id}&token=${audio_token}`
+      }/routines/channel/${
+        store.channel_id
+      }?tune_in=true&audio_token=${audio_token}&_=${ts}`,
     )
-      // fetch(
-      //   `https://api.audioaddict.com/v1/${
-      //     store.sites[store.currentSite]
-      //   }/routines/channel/${
-      //     store.channel_id
-      //   }?tune_in=true&audio_token=${audio_token}&_=${ts}`
-      // )
       .then((response) => response.json())
       .then((data) => setDataTrack(data.tracks))
       .catch((error) => {
@@ -228,16 +228,16 @@ const Player = observer(() => {
 
   // получаем все текущие треки всех каналов сайта c официального api
   const getHistory = () => {
+    // fetch(
+    //   `https://voltron.de2.netrun.io/get_url?url=https://api.audioaddict.com/v1/${
+    //     store.sites[store.currentSite]
+    //   }/track_history.json`,
+    // )
     fetch(
-      `https://voltron-two.vercel.app/get_url?url=https://api.audioaddict.com/v1/${
+      `https://api.audioaddict.com/v1/${
         store.sites[store.currentSite]
-      }/track_history.json`
+      }/track_history.json`,
     )
-      // fetch(
-      //   `https://api.audioaddict.com/v1/${
-      //     store.sites[store.currentSite]
-      //   }/track_history.json`
-      // )
       .then((response) => response.json())
       .then((data) => {
         setDataHistory(data);
@@ -265,7 +265,7 @@ const Player = observer(() => {
     const channelNames = JSON.parse(localStorage.getItem("ch") || "[]");
     if (store.favoriteChannels.channels_id.length <= 1) {
       let index = channelNames.findIndex(
-        (obj: { id: number }) => obj.id === nextChannel
+        (obj: { id: number }) => obj.id === nextChannel,
       );
       if (index === 430) {
         index = 0;
@@ -273,7 +273,7 @@ const Player = observer(() => {
       store.setChannel_id(channelNames[index + 1].id);
       store.setChannel_name(channelNames[index + 1].name);
       store.setCurrentSite(
-        store.network_ids.indexOf(channelNames[index + 1].network_id)
+        store.network_ids.indexOf(channelNames[index + 1].network_id),
       );
     } else {
       for (
@@ -349,7 +349,7 @@ const Player = observer(() => {
         store.sites[store.currentSite]
       }/db_${store.sites[store.currentSite]}_full_${
         store.channel_id
-      }_${premium}light.json`
+      }_${premium}light.json`,
     )
       .then((response) => response.json())
       .then((data) => {
@@ -489,7 +489,7 @@ const Player = observer(() => {
         if (retryCountRef.current < maxRetries) {
           retryCountRef.current += 1;
           console.log(
-            `ID совпадают (${currentTrackId}). Попытка ${retryCountRef.current}/${maxRetries}`
+            `ID совпадают (${currentTrackId}). Попытка ${retryCountRef.current}/${maxRetries}`,
           );
 
           setTimeout(() => {

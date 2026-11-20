@@ -19,10 +19,10 @@ class Store {
   onlyChannelIds: any = [];
   // onlyChannelIds: any = ["cc26102f6b3a03cf3c70b9665c0a5955"];
 
-  premium = [
-    "615841863e5533f627fa26bd6e921776",
-    "055e654b1236dd686b31094e1c5495f2",
-  ];
+  // premium = [
+  //   "615841863e5533f627fa26bd6e921776",
+  //   "055e654b1236dd686b31094e1c5495f2",
+  // ];
 
   allTokens: any = [];
   dataChannels = [];
@@ -31,7 +31,7 @@ class Store {
   allStationsDataLoaded = false;
   removeStarTrack = false;
   bitratePremium = Boolean(
-    JSON.parse(localStorage.getItem("premium") || "false")
+    JSON.parse(localStorage.getItem("premium") || "false"),
   );
 
   message: string = "";
@@ -39,7 +39,7 @@ class Store {
   // historyData = [];
 
   options = JSON.parse(
-    localStorage.getItem("options") || '{"shuffle":2,"favChannels":1}'
+    localStorage.getItem("options") || '{"shuffle":2,"favChannels":1}',
   );
   countPlayingTracks = 0;
   minMax = [
@@ -63,7 +63,7 @@ class Store {
 
   currentPlaying = {
     track: "",
-    url: "http://77.110.111.107/files/0a36c9c085b4331044de1aca9555d252e3c.mp3",
+    url: "",
     asset_url: "",
   };
   allStationsNames = [{}];
@@ -91,40 +91,12 @@ class Store {
     this.allChannelTracks = allChannelTracks;
   }
 
-  // setCurrentPlaying(currentPlaying: {
-  //   track: string;
-  //   url: string;
-  //   asset_url: string;
-  // }) {
-  //   this.currentPlaying = currentPlaying;
-  // }
-
-  async setCurrentPlaying(currentPlaying: {
+  setCurrentPlaying(currentPlaying: {
     track: string;
     url: string;
     asset_url: string;
   }) {
-    try {
-      const response = await fetch(
-        `http://77.110.111.107/save?url=${currentPlaying.url}`
-      );
-      const data = await response.json();
-
-      if (data.success && data.urls && data.urls.direct) {
-        // Update the currentPlaying with the direct URL from the response
-        this.currentPlaying = {
-          ...currentPlaying,
-          url: `http://77.110.111.107${data.urls.direct}`,
-        };
-      } else {
-        // If the request fails or doesn't return the expected format, use the original URL
-        this.currentPlaying = currentPlaying;
-      }
-    } catch (error) {
-      console.error("Error saving URL:", error);
-      // If there's an error, use the original URL
-      this.currentPlaying = currentPlaying;
-    }
+    this.currentPlaying = currentPlaying;
   }
 
   setCurrentSite(currentSite: number) {
@@ -225,7 +197,7 @@ class Store {
     }
     localStorage.setItem(
       "favoriteChannels",
-      JSON.stringify(this.favoriteChannels.channels_id)
+      JSON.stringify(this.favoriteChannels.channels_id),
     );
     this.allFavChannelsView = false;
   }
