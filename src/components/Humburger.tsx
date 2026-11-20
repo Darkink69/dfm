@@ -263,8 +263,8 @@ const Menu = observer(() => {
                     onClick={() => setViewTipsBot(!viewTipsBot)}
                   >
                     <div className="flex items-center w-[200px]">
-                      Для этого вы будете перенаправлены в официальный
-                      телеграм-бот ДИ ФМ.
+                      Телеграм-бот не работает. Обратитесь на форум, сами знаете
+                      к кому.
                     </div>
                   </div>
                 </div>

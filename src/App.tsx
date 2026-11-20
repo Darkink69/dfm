@@ -24,11 +24,13 @@ const App = observer(() => {
   // запас audio_token на нашем storage
   const getAllTokens = () => {
     fetch(
-      `https://qh8bsvaksadb2kj9.public.blob.vercel-storage.com/audio/audio.json`
+      `https://voltron.de2.netrun.io/get-audio-token`,
+      // `https://qh8bsvaksadb2kj9.public.blob.vercel-storage.com/audio/audio.json`
     )
       .then((response) => response.json())
       .then((data) => {
-        store.setAllTokens(data);
+        console.log(data.audio_token, "токен!!!");
+        store.setAllTokens(data.audio_token);
         setAcсessData();
       })
       .catch((error) => {
@@ -41,13 +43,14 @@ const App = observer(() => {
 
   // Получение данных для доступа из текущего трека
   const getAcсessData = () => {
-    const rndToken =
-      store.allTokens[Math.floor(Math.random() * store.allTokens.length)];
+    const rndToken = store.allTokens;
+    // const rndToken =
+    //   store.allTokens[Math.floor(Math.random() * store.allTokens.length)];
     // const ts = Date.now();
     fetch(
       `https://voltron-two.vercel.app/di/get_tracks?site=${
         store.sites[store.currentSite]
-      }&channel=${store.channel_id}&token=${rndToken}`
+      }&channel=${store.channel_id}&token=${rndToken}`,
     )
       // fetch(
       //   `https://api.audioaddict.com/v1/${
@@ -60,7 +63,7 @@ const App = observer(() => {
       .then((data) => {
         localStorage.setItem(
           "data",
-          JSON.stringify(data?.tracks[0].content.assets[0].url.split("?")[1])
+          JSON.stringify(data?.tracks[0].content.assets[0].url.split("?")[1]),
         );
         setIsLoaded(true);
       })
@@ -81,7 +84,7 @@ const App = observer(() => {
     const infoCh: any = [];
     store.sites.map((item: any) => {
       fetch(
-        `https://voltron-two.vercel.app/get_url?url=https://api.audioaddict.com/v1/${item}/channels.json`
+        `https://voltron-two.vercel.app/get_url?url=https://api.audioaddict.com/v1/${item}/channels.json`,
       )
         // fetch(`https://api.audioaddict.com/v1/${item}/channels.json`)
         .then((response) => response.json())
@@ -110,7 +113,7 @@ const App = observer(() => {
         store.sites[store.currentSite]
       }/db_${store.sites[store.currentSite]}_full_${
         store.channel_id
-      }_${premium}light.json`
+      }_${premium}light.json`,
     )
       .then((response) => response.json())
       .then((data) => {
@@ -141,7 +144,21 @@ const App = observer(() => {
     store.setAllStationsDataLoaded(true);
   }, [dataChannels]);
 
+  // const Test = () => {
+  //   fetch(`https://voltron-two.vercel.app/di/access`)
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       {
+  //         console.log(data);
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.error(error);
+  //     });
+  // };
+
   useEffect(() => {
+    // Test();
     getAllTokens();
     getAllChannelTracks();
     const channelNames = JSON.parse(localStorage.getItem("ch") || "0");
